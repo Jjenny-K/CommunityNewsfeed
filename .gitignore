@@ -1,3 +1,9 @@
+# ignore properties file
+.env
+
+# database info
+db/
+
 HELP.md
 .gradle
 build/
