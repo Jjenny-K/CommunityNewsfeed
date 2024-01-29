@@ -3,14 +3,10 @@ package com.handicraft.domain.dto;
 import lombok.*;
 
 @Getter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
-public class TokenDto {
+public class TokenRequestDto {
 
-    private String grantType;
     private String accessToken;
     private String refreshToken;
-    private Long accessTokenExpiresIn;
 
 }

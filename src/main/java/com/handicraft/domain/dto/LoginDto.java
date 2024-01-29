@@ -5,8 +5,8 @@ import lombok.*;
 
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class LoginDto {
 
     @NotNull

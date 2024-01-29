@@ -7,8 +7,8 @@ import lombok.*;
 @Table(name = "authority")
 @Getter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
 public class Authority {
 
     @Id

@@ -1,11 +1,11 @@
 package com.handicraft.config;
 
-import com.handicraft.jwt.JwtSecurityConfig;
 import com.handicraft.jwt.TokenProvider;
 import com.handicraft.jwt.JwtAccessDeniedHandler;
 import com.handicraft.jwt.JwtAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -23,13 +23,16 @@ public class SecurityConfig {
     private final TokenProvider tokenProvider;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
+    private final StringRedisTemplate redisTemplate;
 
     public SecurityConfig(TokenProvider tokenProvider,
                           JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
-                          JwtAccessDeniedHandler jwtAccessDeniedHandler) {
+                          JwtAccessDeniedHandler jwtAccessDeniedHandler,
+                          StringRedisTemplate redisTemplate) {
         this.tokenProvider = tokenProvider;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
         this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
+        this.redisTemplate = redisTemplate;
     }
 
     @Bean
@@ -56,14 +59,15 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers(
                                 "/api/hello",
-                                         "/api/authenticate",
-                                         "/api/signup"
+                                         "/api/signup",
+                                         "/api/login"
                         )
                         .permitAll()
                         .anyRequest().authenticated()
                 )
 
-                .with(new JwtSecurityConfig(tokenProvider), customizer -> {});
+                // JwtFilter customize 적용
+                .with(new JwtSecurityConfig(tokenProvider, redisTemplate), customizer -> {});
 
         return httpSecurity.build();
     }
