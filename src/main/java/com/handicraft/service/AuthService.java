@@ -7,6 +7,8 @@ import com.handicraft.domain.dto.UserRequestDto;
 import com.handicraft.domain.entity.Authority;
 import com.handicraft.domain.entity.CustomUser;
 import com.handicraft.domain.entity.RefreshToken;
+import com.handicraft.exception.CustomApiException;
+import com.handicraft.exception.ErrorCode;
 import com.handicraft.jwt.TokenProvider;
 import com.handicraft.repository.RefreshTokenRepository;
 import com.handicraft.repository.UserRepository;
@@ -53,7 +55,7 @@ public class AuthService {
     public UserRequestDto signup(UserRequestDto userDto) {
 
         if (userRepository.findOneWithAuthoritiesByEmail(userDto.getEmail()).orElse(null) != null) {
-            throw new RuntimeException("이미 가입되어 있는 이메일입니다.");
+            throw new CustomApiException(ErrorCode.DUPLICATED_USER_NAME);
         }
 
         Authority authority = Authority.builder().authorityName("ROLE_USER").build();
@@ -96,16 +98,16 @@ public class AuthService {
     @Transactional
     public TokenDto reissue(TokenRequestDto tokenRequestDto) {
         if (!tokenProvider.validateToken(tokenRequestDto.getRefreshToken())) {
-            throw new RuntimeException("Refresh Token 이 유효하지 않습니다.");
+            throw new CustomApiException(ErrorCode.EXPIRED_TOKEN);
         }
 
         Authentication authentication = tokenProvider.getAuthentication(tokenRequestDto.getAccessToken());
 
         RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
-                .orElseThrow(() -> new RuntimeException("로그아웃 된 사용자입니다."));
+                .orElseThrow(() -> new CustomApiException(ErrorCode.UNKNOWN_ERROR));
 
         if (!refreshToken.getValue().equals(tokenRequestDto.getRefreshToken())) {
-            throw new RuntimeException("토큰의 유저 정보가 일치하지 않습니다.");
+            throw new CustomApiException(ErrorCode.ACCESS_DENIED);
         }
 
         TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
@@ -124,7 +126,7 @@ public class AuthService {
         logoutValueOperations.set(jwt, jwt);
 
         refreshTokenRepository.deleteByKey(String.valueOf(SecurityUtil.getCurrentUsername()))
-                .orElseThrow(() -> new RuntimeException("로그인 유저 정보가 없습니다."));
+                .orElseThrow(() -> new CustomApiException(ErrorCode.ACCESS_DENIED));
     }
 
 }
