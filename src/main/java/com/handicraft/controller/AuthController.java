@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api")
 public class AuthController {
@@ -26,8 +29,13 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<UserRequestDto> signup(@Valid @RequestBody UserRequestDto userDto) {
-        return ResponseEntity.ok(authService.signup(userDto));
+    public ResponseEntity<?> signup(@Valid @RequestBody UserRequestDto userDto) {
+        UserRequestDto user = authService.signup(userDto);
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("message", user.getName() + "님 환영합니다!");
+
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
     // 로그인
@@ -48,12 +56,15 @@ public class AuthController {
     }
 
     // 로그아웃
-    @GetMapping("/logout")
+    @PostMapping("/logout")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<String> logout(HttpServletRequest request) {
+    public ResponseEntity<?> logout(HttpServletRequest request) {
         authService.logout(request);
 
-        return new ResponseEntity<>("로그아웃 성공", HttpStatus.OK);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("message", "로그아웃 성공");
+
+        return new ResponseEntity<>(responseBody, HttpStatus.ACCEPTED);
     }
 
 }
