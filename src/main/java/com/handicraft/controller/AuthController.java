@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,11 +30,11 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@Valid @RequestBody UserRequestDto userDto) {
+    public ResponseEntity<?> signup(@Valid @ModelAttribute UserRequestDto userDto) throws IOException {
         UserRequestDto user = authService.signup(userDto);
 
         Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("message", user.getName() + "님 환영합니다!");
+        responseBody.put("message", user.getName() + "-> 회원가입 성공");
 
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }

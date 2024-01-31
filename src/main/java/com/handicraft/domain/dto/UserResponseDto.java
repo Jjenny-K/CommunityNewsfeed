@@ -1,6 +1,5 @@
 package com.handicraft.domain.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.handicraft.domain.entity.Authority;
 import com.handicraft.domain.entity.CustomUser;
 import jakarta.validation.constraints.NotNull;
@@ -22,11 +21,6 @@ public class UserResponseDto {
     @Size(min = 3, max = 50)
     private String email;
 
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
-    @NotNull
-    @Size(min = 3, max = 100)
-    private String password;
-
     @NotNull
     @Size(min = 3, max =50)
     private String name;
@@ -39,6 +33,9 @@ public class UserResponseDto {
     @Size(min = 3, max = 50)
     private Set<Authority> authorities;
 
+    @NotNull
+    private ProfileImageResponseDto profileImage;
+
     public static UserResponseDto from(CustomUser user) {
         if(user == null) return null;
 
@@ -47,6 +44,7 @@ public class UserResponseDto {
                 .name(user.getName())
                 .greeting(user.getGreeting())
                 .authorities(user.getAuthorities())
+                .profileImage(ProfileImageResponseDto.from(user.getProfileImage()))
                 .build();
     }
 

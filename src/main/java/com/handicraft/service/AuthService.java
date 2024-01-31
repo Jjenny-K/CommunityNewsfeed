@@ -1,9 +1,6 @@
 package com.handicraft.service;
 
-import com.handicraft.domain.dto.LoginDto;
-import com.handicraft.domain.dto.TokenDto;
-import com.handicraft.domain.dto.TokenRequestDto;
-import com.handicraft.domain.dto.UserRequestDto;
+import com.handicraft.domain.dto.*;
 import com.handicraft.domain.entity.Authority;
 import com.handicraft.domain.entity.CustomUser;
 import com.handicraft.domain.entity.RefreshToken;
@@ -24,7 +21,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.Collections;
+import java.util.Objects;
 
 @Service
 public class AuthService {
@@ -32,33 +31,37 @@ public class AuthService {
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final PasswordEncoder passwordEncoder;
     private final TokenProvider tokenProvider;
+    private final StringRedisTemplate redisTemplate;
     private final UserRepository userRepository;
     private final RefreshTokenRepository refreshTokenRepository;
-    private final StringRedisTemplate redisTemplate;
+    private final ImageService imageService;
 
     public AuthService(AuthenticationManagerBuilder authenticationManagerBuilder,
                        PasswordEncoder passwordEncoder,
                        TokenProvider tokenProvider,
+                       StringRedisTemplate redisTemplate,
                        UserRepository userRepository,
                        RefreshTokenRepository refreshTokenRepository,
-                       StringRedisTemplate redisTemplate) {
+                       ImageService imageService) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.passwordEncoder = passwordEncoder;
         this.tokenProvider = tokenProvider;
+        this.redisTemplate = redisTemplate;
         this.userRepository = userRepository;
         this.refreshTokenRepository = refreshTokenRepository;
-        this.redisTemplate = redisTemplate;
+        this.imageService = imageService;
     }
 
     // 회원가입
     @Transactional
-    public UserRequestDto signup(UserRequestDto userDto) {
+    public UserRequestDto signup(UserRequestDto userDto) throws IOException {
 
-        if (userRepository.findOneWithAuthoritiesByEmail(userDto.getEmail()).orElse(null) != null) {
+        if (userRepository.findOneWithAuthoritiesWithProFileImageByEmail(userDto.getEmail()).orElse(null) != null) {
             throw new CustomApiException(ErrorCode.DUPLICATED_USER_NAME);
         }
 
         Authority authority = Authority.builder().authorityName("ROLE_USER").build();
+
 
         CustomUser user = CustomUser.builder()
                 .email(userDto.getEmail())
@@ -69,7 +72,15 @@ public class AuthService {
                 .authorities(Collections.singleton(authority))
                 .build();
 
-        return UserRequestDto.from(userRepository.save(user));
+        UserRequestDto userRequestDto = UserRequestDto.from(userRepository.save(user));
+
+        if (!Objects.requireNonNull(userDto.getProfileImage().getContentType()).startsWith("image")) {
+            throw new RuntimeException("이미지 파일이 아닙니다.");
+        }
+
+        imageService.profileImageUpload(new ProfileImageUploadDto((userDto.getProfileImage())), user.getEmail());
+
+        return userRequestDto;
     }
 
     // 로그인

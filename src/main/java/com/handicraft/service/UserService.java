@@ -21,7 +21,7 @@ public class UserService {
     public UserResponseDto getMyInfo() {
         return UserResponseDto.from(
                 SecurityUtil.getCurrentUsername()
-                        .flatMap(userRepository::findOneWithAuthoritiesByEmail)
+                        .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
                         .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."))
         );
     }
