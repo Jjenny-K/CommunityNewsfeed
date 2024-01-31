@@ -41,6 +41,13 @@ spring:
   redis:
     host: {local redis host name}
     port: {local redis port}
+
+  servlet:
+    multipart:
+      enabled: true
+      location: "{multipart file stored location}"
+      max-request-size: {max request size}  # --MB 형태
+      max-file-size: {max file size}  # --MB 형태
   ...
 
 server:
@@ -54,6 +61,8 @@ jwt:
 
 ...
 ```
+
+2-3. application.yml 파일에 지정한 multipart file stored location에 **profileImages** 이름의 폴더를 생성합니다.
 
 3. docker에 database 이미지를 생성하고 컨테이너화 합니다.
 ```shell
