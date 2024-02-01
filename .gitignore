@@ -5,6 +5,9 @@ application-local.yml
 # database info
 db/
 
+# images info
+images/
+
 HELP.md
 .gradle
 build/
