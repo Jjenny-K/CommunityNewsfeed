@@ -15,7 +15,7 @@
 #### Local server
 1. github에서 해당 프로젝트의 repository를 clone합니다.
 ```shell
-$ git clone https://github.com/Jjenny-K/PreOrderPurchase.git
+$ git clone https://github.com/Jjenny-K/PreorderPurchase.git
 ```
 
 2-1. .env 파일을 root directory에 생성 후, MYSQL, Redis와 연동을 위한 정보를 저장합니다.
