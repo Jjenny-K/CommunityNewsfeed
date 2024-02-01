@@ -12,6 +12,7 @@ services:
       - '--collation-server=utf8mb4_unicode_ci'
     environment:
       - ./.env
+    restart: always
 
   redis:
     container_name: redis
@@ -25,3 +26,4 @@ services:
     extra_hosts:
       - host.docker.internal:host-gateway
     command: redis-server --port 6379
+    restart: always
