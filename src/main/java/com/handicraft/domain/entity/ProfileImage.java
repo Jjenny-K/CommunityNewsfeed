@@ -19,4 +19,8 @@ public class ProfileImage extends Image {
     @JoinColumn(name = "userId")
     private CustomUser user;
 
+    public void updateFilePath(String filePath) {
+        this.setFilePath(filePath);
+    }
+
 }

@@ -56,7 +56,7 @@ public class AuthService {
     @Transactional
     public UserRequestDto signup(UserRequestDto userDto) throws IOException {
 
-        if (userRepository.findOneWithAuthoritiesWithProFileImageByEmail(userDto.getEmail()).orElse(null) != null) {
+        if (userRepository.findOneWithAuthoritiesByEmail(userDto.getEmail()).orElse(null) != null) {
             throw new CustomApiException(ErrorCode.DUPLICATED_USER_NAME);
         }
 

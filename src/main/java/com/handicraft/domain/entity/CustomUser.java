@@ -2,6 +2,7 @@ package com.handicraft.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.handicraft.domain.core.BaseCreatedUpdated;
+import com.handicraft.domain.dto.UpdateUserDto;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -55,5 +56,14 @@ public class CustomUser extends BaseCreatedUpdated {
             inverseJoinColumns = {@JoinColumn(name = "imageId", referencedColumnName ="imageId")}
     )
     private ProfileImage profileImage;
+
+    public void updateUserInfo(UpdateUserDto dto) {
+        if (dto.getName() != null) this.name = dto.getName();
+        if (dto.getGreeting() != null) this.greeting = dto.getGreeting();
+    }
+
+    public void updatePassword(String newPassword) {
+        this.password = newPassword;
+    }
 
 }

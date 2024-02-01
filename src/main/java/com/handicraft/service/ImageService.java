@@ -15,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 
@@ -38,7 +39,7 @@ public class ImageService {
     // 프로필 이미지 업로드
     @Transactional
     public void profileImageUpload(ProfileImageUploadDto profileImageUploadDto, String email) throws IOException {
-        CustomUser user = userRepository.findOneWithAuthoritiesWithProFileImageByEmail(email)
+        CustomUser user = userRepository.findOneWithAuthoritiesByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("사용자가 존재하지 않습니다."));
 
         MultipartFile file = profileImageUploadDto.getFile();
@@ -57,6 +58,39 @@ public class ImageService {
                     .build();
 
         profileImageRepository.save(image);
+    }
+
+    // 프로필 이미지 수정
+    @Transactional
+    public void updateProfileImage(ProfileImageUploadDto profileImageUploadDto, String email) throws IOException {
+        CustomUser user = userRepository.findOneWithAuthoritiesByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("사용자가 존재하지 않습니다."));
+
+        MultipartFile file = profileImageUploadDto.getFile();
+
+        String uuid = UUID.randomUUID().toString();
+        String profileImageFileName = uuid + "_" + file.getOriginalFilename();
+
+        ProfileImage image = profileImageRepository.findByUser(user)
+                .orElseThrow(() -> new RuntimeException("이미지가 존재하지 않습니다."));
+
+        if (!deleteFile(image.getFilePath())) {
+            throw new RuntimeException("이미지가 존재하지 않습니다.");
+        }
+
+        File destinationFile = new File(uploadFolder + "\\profileImages\\" + profileImageFileName);
+        file.transferTo(destinationFile);
+
+        image.updateFilePath("\\profileImages\\" + profileImageFileName);
+
+        profileImageRepository.save(image);
+    }
+
+    // 저장된 파일 삭제
+    public Boolean deleteFile(String filePath) throws UnsupportedEncodingException {
+        File file = new File(uploadFolder + filePath);
+
+        return file.delete();
     }
 
 }

@@ -26,7 +26,7 @@ public class CustomUserDetailsService implements UserDetailsService {
     @Override
     @Transactional
     public UserDetails loadUserByUsername(final String email) {
-        return userRepository.findOneWithAuthoritiesWithProFileImageByEmail(email)
+        return userRepository.findOneWithAuthoritiesByEmail(email)
                 .map(user -> createUserDetails(user))
                 .orElseThrow(() -> new UsernameNotFoundException(email + " -> 데이터베이스에서 찾을 수 없습니다."));
     }
