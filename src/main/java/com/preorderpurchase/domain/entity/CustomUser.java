@@ -10,7 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.util.Set;
 
-@Entity(name = "Users")
+@Entity(name = "users")
 @Table(name = "users")
 @Getter
 @SuperBuilder
@@ -50,11 +50,6 @@ public class CustomUser extends BaseCreatedUpdated {
     private Set<Authority> authorities;
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, optional = false)
-    @JoinTable(
-            name = "userProfileImage",
-            joinColumns = {@JoinColumn(name = "userId", referencedColumnName = "userId")},
-            inverseJoinColumns = {@JoinColumn(name = "imageId", referencedColumnName ="imageId")}
-    )
     private ProfileImage profileImage;
 
     public void updateUserInfo(UpdateUserDto dto) {
