@@ -1,6 +1,7 @@
 package com.preorderpurchase.domain.entity;
 
 import com.preorderpurchase.domain.core.Image;
+import com.preorderpurchase.domain.dto.UpdateProfileImageDto;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -19,8 +20,10 @@ public class ProfileImage extends Image {
     @JoinColumn(name = "userId")
     private CustomUser user;
 
-    public void updateFilePath(String filePath) {
-        this.setFilePath(filePath);
+    public void updateProfileImage(UpdateProfileImageDto updateProfileImageDto) {
+        this.setUuid(updateProfileImageDto.getUuid());
+        this.setFileName(updateProfileImageDto.getFileName());
+        this.setFilePath(updateProfileImageDto.getFilePath());
     }
 
 }

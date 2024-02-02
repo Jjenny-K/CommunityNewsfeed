@@ -1,6 +1,7 @@
 package com.preorderpurchase.service;
 
 import com.preorderpurchase.domain.dto.ProfileImageUploadDto;
+import com.preorderpurchase.domain.dto.UpdateProfileImageDto;
 import com.preorderpurchase.domain.entity.CustomUser;
 import com.preorderpurchase.domain.entity.ProfileImage;
 import com.preorderpurchase.repository.ProfileImageRepository;
@@ -70,6 +71,7 @@ public class ImageService {
 
         String uuid = UUID.randomUUID().toString();
         String profileImageFileName = uuid + "_" + file.getOriginalFilename();
+        String profileImageFilePath = "\\profileImages\\" + profileImageFileName;
 
         ProfileImage image = profileImageRepository.findByUser(user)
                 .orElseThrow(() -> new RuntimeException("이미지가 존재하지 않습니다."));
@@ -78,10 +80,15 @@ public class ImageService {
             throw new RuntimeException("이미지가 존재하지 않습니다.");
         }
 
-        File destinationFile = new File(uploadFolder + "\\profileImages\\" + profileImageFileName);
+        File destinationFile = new File(uploadFolder + profileImageFilePath);
         file.transferTo(destinationFile);
 
-        image.updateFilePath("\\profileImages\\" + profileImageFileName);
+        UpdateProfileImageDto updateProfileImageDto = new UpdateProfileImageDto();
+        updateProfileImageDto.setUuid(uuid);
+        updateProfileImageDto.setFileName(profileImageFileName);
+        updateProfileImageDto.setFilePath(profileImageFilePath);
+
+        image.updateProfileImage(updateProfileImageDto);
 
         profileImageRepository.save(image);
     }

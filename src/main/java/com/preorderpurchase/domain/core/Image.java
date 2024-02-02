@@ -6,6 +6,7 @@ import lombok.experimental.SuperBuilder;
 
 
 @Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -26,7 +27,4 @@ public abstract class Image extends BaseCreatedUpdated{
     @Column(name = "filePath", nullable = false)
     private String filePath;
 
-    protected void setFilePath(String filePath) {
-        this.filePath = filePath;
-    }
 }
