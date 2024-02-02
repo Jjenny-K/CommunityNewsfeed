@@ -39,7 +39,7 @@ public class UserController {
 
         UserResponseDto user = userService.getMyUserInfo();
 
-        return new ResponseEntity<>(user, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     // 비밀번호 수정
@@ -50,7 +50,7 @@ public class UserController {
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("message", "비밀번호 수정 성공");
 
-        return new ResponseEntity<>(responseBody, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(responseBody, HttpStatus.CREATED);
     }
 
 }

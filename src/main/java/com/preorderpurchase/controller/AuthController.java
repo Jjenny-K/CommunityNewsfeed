@@ -36,7 +36,7 @@ public class AuthController {
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("message", user.getName() + "-> 회원가입 성공");
 
-        return new ResponseEntity<>(responseBody, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(responseBody, HttpStatus.CREATED);
     }
 
     // 로그인
