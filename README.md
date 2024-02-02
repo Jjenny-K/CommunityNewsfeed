@@ -18,12 +18,14 @@
 $ git clone https://github.com/Jjenny-K/PreorderPurchase.git
 ```
 
-2-1. .env 파일을 root directory에 생성 후, MYSQL, Redis와 연동을 위한 정보를 저장합니다.
+2-1. .env 파일을 root directory에 생성 후, MYSQL, Adminer, Redis와 연동을 위한 정보를 저장합니다.
 ```
 MYSQL_DATABASE='{local database name}'
 MYSQL_ROOT_USER='{local database user}'
 MYSQL_ROOT_PASSWORD='{local database password}'
 LOCAL_DB_PORT='{local database port}'
+
+LOCAL_DB_ADMINER_HOST='{local database adminer host}'
 
 LOCAL_REDIS_HOST_NAME='{local redis host name}'
 LOCAL_REDIS_PORT='{local redis port}'
