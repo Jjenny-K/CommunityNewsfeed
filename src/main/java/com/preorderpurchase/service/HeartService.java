@@ -1,13 +1,9 @@
 package com.preorderpurchase.service;
 
-import com.preorderpurchase.domain.entity.CustomUser;
-import com.preorderpurchase.domain.entity.Post;
-import com.preorderpurchase.domain.entity.PostHeart;
+import com.preorderpurchase.domain.entity.*;
 import com.preorderpurchase.exception.CustomApiException;
 import com.preorderpurchase.exception.ErrorCode;
-import com.preorderpurchase.repository.PostHeartRepository;
-import com.preorderpurchase.repository.PostRepository;
-import com.preorderpurchase.repository.UserRepository;
+import com.preorderpurchase.repository.*;
 import com.preorderpurchase.util.SecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +18,20 @@ public class HeartService {
 
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
     private final PostHeartRepository postHeartRepository;
+    private final CommentHeartRepository commentHeartRepository;
 
     public HeartService(UserRepository userRepository,
                         PostRepository postRepository,
-                        PostHeartRepository postHeartRepository) {
+                        CommentRepository commentRepository,
+                        PostHeartRepository postHeartRepository,
+                        CommentHeartRepository commentHeartRepository) {
         this.userRepository = userRepository;
         this.postRepository = postRepository;
+        this.commentRepository = commentRepository;
         this.postHeartRepository = postHeartRepository;
+        this.commentHeartRepository = commentHeartRepository;
     }
 
     // 게시글 좋아요
@@ -53,4 +55,27 @@ public class HeartService {
 
         return postHeartRepository.save(postHeart);
     }
+
+    // 게시글 좋아요
+    @Transactional
+    public CommentHeart commentHeart(Long commentId) {
+        CustomUser user = SecurityUtil.getCurrentUsername()
+                .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
+                .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."));
+
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_COMMENT));
+
+        // 중복 좋아요 방지
+        if (commentHeartRepository.findCommentHeart(user, comment).isPresent())
+            throw new CustomApiException(ErrorCode.DUPLICATED_COMMENT_HEART);
+
+        CommentHeart commentHeart = CommentHeart.builder()
+                .commentHeartUser(user)
+                .comment(comment)
+                .build();
+
+        return commentHeartRepository.save(commentHeart);
+    }
+
 }

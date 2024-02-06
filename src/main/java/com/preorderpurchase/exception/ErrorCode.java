@@ -18,7 +18,9 @@ public enum ErrorCode {
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, 1009, "잘못된 요청입니다."),
     DUPLICATED_FOLLOW(HttpStatus.CONFLICT, 1010, "이미 팔로우한 사용자입니다."),
     NOT_FOUND_POST(HttpStatus.NOT_FOUND, 1011, "포스트를 찾을 수 없습니다."),
-    DUPLICATED_POST_HEART(HttpStatus.CONFLICT, 1012, "이미 좋아요한 게시글입니다."),;
+    DUPLICATED_POST_HEART(HttpStatus.CONFLICT, 1012, "이미 좋아요한 게시글입니다."),
+    NOT_FOUND_COMMENT(HttpStatus.NOT_FOUND, 1013, "댓글을 찾을 수 없습니다."),
+    DUPLICATED_COMMENT_HEART(HttpStatus.CONFLICT, 1014, "이미 좋아요한 댓글입니다."),;
 
     private final HttpStatus httpStatus;
     private final int code;

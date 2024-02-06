@@ -1,5 +1,6 @@
 package com.preorderpurchase.controller;
 
+import com.preorderpurchase.domain.entity.CommentHeart;
 import com.preorderpurchase.domain.entity.PostHeart;
 import com.preorderpurchase.service.HeartService;
 import org.springframework.http.HttpStatus;
@@ -34,4 +35,16 @@ public class HeartController {
 
         return new ResponseEntity<>(responseBody, HttpStatus.CREATED);
     }
+
+    // 댓글 좋아요
+    @PostMapping("/comments/{commentId}/heart")
+    public ResponseEntity<?> commentHeart(@PathVariable("commentId") Long commentId) {
+        CommentHeart commentHeart = heartService.commentHeart(commentId);
+
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("message", commentHeart.getComment().getComment() + "-> 좋아요 성공");
+
+        return new ResponseEntity<>(responseBody, HttpStatus.CREATED);
+    }
+
 }
