@@ -3,7 +3,9 @@ package com.preorderpurchase.service;
 import com.preorderpurchase.domain.dto.NewsFeedResponseDto;
 import com.preorderpurchase.domain.entity.CustomUser;
 import com.preorderpurchase.domain.entity.Follow;
+import com.preorderpurchase.domain.entity.Post;
 import com.preorderpurchase.repository.FollowRepository;
+import com.preorderpurchase.repository.PostRepository;
 import com.preorderpurchase.repository.UserRepository;
 import com.preorderpurchase.util.SecurityUtil;
 import org.slf4j.Logger;
@@ -24,11 +26,14 @@ public class NewsFeedService {
 
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final PostRepository postRepository;
 
     public NewsFeedService(UserRepository userRepository,
-                           FollowRepository followRepository) {
+                           FollowRepository followRepository,
+                           PostRepository postRepository) {
         this.userRepository = userRepository;
         this.followRepository = followRepository;
+        this.postRepository = postRepository;
     }
 
     // 팔로우 뉴스피드
@@ -64,7 +69,17 @@ public class NewsFeedService {
                 NewsFeedResponseDto responseDto = new NewsFeedResponseDto(message, createdAt);
                 NewsFeedFollowList.add(responseDto);
             }
+
             // 팔로잉한 사용자가 작성한 글
+            List<Post> postList = postRepository.findByPostUser(followingUser);
+            for (Post post : postList) {
+                String message = followingUser.getName() + "님이 "
+                        + post.getTitle() + " 포스트를 작성했습니다.";
+                LocalDateTime createAt = post.getCreatedAt();
+
+                NewsFeedResponseDto responseDto = new NewsFeedResponseDto(message, createAt);
+                NewsFeedFollowList.add(responseDto);
+            }
             // 팔로잉한 사용자가 작성한 댓글
             // 팔로잉한 사용자가 좋아요한 글
             // 팔로잉한 사용자가 좋아요한 댓글
