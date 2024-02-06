@@ -13,10 +13,11 @@ public enum ErrorCode {
     UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED,1004, "변조된 토큰입니다."),
     ACCESS_DENIED(HttpStatus.FORBIDDEN,1005, "권한이 없습니다."),
 
-    NOT_FOUND(HttpStatus.NOT_FOUND, 1007, "사용자를 찾을 수 없습니다."),
+    NOT_FOUND_USER(HttpStatus.NOT_FOUND, 1007, "사용자를 찾을 수 없습니다."),
     DUPLICATED_USER_NAME(HttpStatus.CONFLICT, 1008, "이미 가입된 사용자입니다."),
     INVALID_REQUEST(HttpStatus.BAD_REQUEST, 1009, "잘못된 요청입니다."),
-    DUPLICATED_FOLLOW(HttpStatus.CONFLICT, 1010, "이미 팔로우한 사용자입니다.");
+    DUPLICATED_FOLLOW(HttpStatus.CONFLICT, 1010, "이미 팔로우한 사용자입니다."),
+    NOT_FOUND_POST(HttpStatus.NOT_FOUND, 1011, "포스트를 찾을 수 없습니다."),;
 
     private final HttpStatus httpStatus;
     private final int code;
