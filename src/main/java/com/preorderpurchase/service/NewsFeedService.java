@@ -1,9 +1,11 @@
 package com.preorderpurchase.service;
 
 import com.preorderpurchase.domain.dto.NewsFeedResponseDto;
+import com.preorderpurchase.domain.entity.Comment;
 import com.preorderpurchase.domain.entity.CustomUser;
 import com.preorderpurchase.domain.entity.Follow;
 import com.preorderpurchase.domain.entity.Post;
+import com.preorderpurchase.repository.CommentRepository;
 import com.preorderpurchase.repository.FollowRepository;
 import com.preorderpurchase.repository.PostRepository;
 import com.preorderpurchase.repository.UserRepository;
@@ -27,13 +29,16 @@ public class NewsFeedService {
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
     private final PostRepository postRepository;
+    private final CommentRepository commentRepository;
 
     public NewsFeedService(UserRepository userRepository,
                            FollowRepository followRepository,
-                           PostRepository postRepository) {
+                           PostRepository postRepository,
+                           CommentRepository commentRepository) {
         this.userRepository = userRepository;
         this.followRepository = followRepository;
         this.postRepository = postRepository;
+        this.commentRepository = commentRepository;
     }
 
     // 팔로우 뉴스피드
@@ -75,12 +80,22 @@ public class NewsFeedService {
             for (Post post : postList) {
                 String message = followingUser.getName() + "님이 "
                         + post.getTitle() + " 포스트를 작성했습니다.";
-                LocalDateTime createAt = post.getCreatedAt();
+                LocalDateTime createdAt = post.getCreatedAt();
 
-                NewsFeedResponseDto responseDto = new NewsFeedResponseDto(message, createAt);
+                NewsFeedResponseDto responseDto = new NewsFeedResponseDto(message, createdAt);
                 NewsFeedFollowList.add(responseDto);
             }
+
             // 팔로잉한 사용자가 작성한 댓글
+            List<Comment> commentList = commentRepository.findByCommentUser(followingUser);
+            for (Comment comment : commentList) {
+                String message = followingUser.getName() + "님이 "
+                        + comment.getPost().getPostUser().getName() + "님의 글에 댓글을 남겼습니다.";
+                LocalDateTime createdAt = comment.getCreatedAt();
+
+                NewsFeedResponseDto responseDto = new NewsFeedResponseDto(message, createdAt);
+                NewsFeedFollowList.add(responseDto);
+            }
             // 팔로잉한 사용자가 좋아요한 글
             // 팔로잉한 사용자가 좋아요한 댓글
         }
@@ -89,4 +104,29 @@ public class NewsFeedService {
                 .sorted(Comparator.comparing(NewsFeedResponseDto::getCreatedAt).reversed())
                 .collect(Collectors.toList());
     }
+
+    // 게시판 뉴스피드
+    public List<NewsFeedResponseDto> getNewsFeedPostList() {
+        CustomUser user = SecurityUtil.getCurrentUsername()
+                .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
+                .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."));
+
+        List<NewsFeedResponseDto> NewsFeedPostList = new ArrayList<>();
+
+        List<Post> postList = postRepository.findByPostUser(user);
+        for (Post post : postList) {
+            for (Comment comment : post.getCommentList()) {
+                String message = comment.getCommentUser().getName() + "님이 "
+                        + post.getTitle() + " 포스트에 댓글을 남겼습니다.";
+                LocalDateTime createdAt = comment.getCreatedAt();
+
+                NewsFeedPostList.add(new NewsFeedResponseDto(message, createdAt));
+            }
+        }
+
+        return NewsFeedPostList.stream()
+                .sorted(Comparator.comparing(NewsFeedResponseDto::getCreatedAt).reversed())
+                .collect(Collectors.toList());
+    }
+
 }
