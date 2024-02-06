@@ -36,7 +36,7 @@ public class FollowService {
 
         CustomUser followingUser =
                 userRepository.findOneWithAuthoritiesWithProFileImageByEmail(friendUserEmail)
-                        .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND));
+                        .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_USER));
 
         // 자기 자신 follow 방지
         if (followerUser == followingUser)
