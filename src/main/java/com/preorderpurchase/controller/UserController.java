@@ -27,13 +27,13 @@ public class UserController {
     }
 
     // 본인 정보 조회
-    @GetMapping("/user")
+    @GetMapping("/users")
     public ResponseEntity<UserResponseDto> getMyUserInfo(HttpServletRequest request) {
         return ResponseEntity.ok(userService.getMyUserInfo());
     }
 
     // 본인 정보 수정
-    @PutMapping("/user")
+    @PutMapping("/users")
     public ResponseEntity<?> updateMyUserInfo(@Valid @ModelAttribute UpdateUserDto updateUserDto) throws IOException {
         userService.updateMyUserInfo(updateUserDto);
 
@@ -43,7 +43,7 @@ public class UserController {
     }
 
     // 비밀번호 수정
-    @PutMapping("/user/password")
+    @PutMapping("/users/password")
     public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) {
         userService.updatePassword(updatePasswordDto);
 

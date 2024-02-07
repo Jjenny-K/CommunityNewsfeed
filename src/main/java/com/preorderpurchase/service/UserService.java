@@ -68,6 +68,7 @@ public class UserService {
     }
 
     // 비밀번호 확인
+    @Transactional(readOnly = true)
     public CustomUser validatePassword(String currentPassword) {
         CustomUser user = SecurityUtil.getCurrentUsername()
                 .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)

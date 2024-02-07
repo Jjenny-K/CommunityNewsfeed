@@ -9,7 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Table(name = "commentHearts")
 @Getter
 @Builder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class CommentHeart extends BaseCreated {
@@ -20,8 +20,8 @@ public class CommentHeart extends BaseCreated {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "commentHeartUserId")
-    private CustomUser commentHeartUser;
+    @JoinColumn(name = "userId")
+    private CustomUser user;
 
     @ManyToOne
     @JoinColumn(name = "commentId")

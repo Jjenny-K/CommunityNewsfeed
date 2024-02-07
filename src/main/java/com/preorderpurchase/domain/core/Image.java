@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 public abstract class Image extends BaseCreatedUpdated{
 
     @Id
-    @Column(name = "imageId")
+    @Column(name = "imageId", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 

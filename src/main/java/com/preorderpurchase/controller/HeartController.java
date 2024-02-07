@@ -26,9 +26,9 @@ public class HeartController {
     }
 
     // 게시글 좋아요
-    @PostMapping("/heart")
+    @PostMapping("/hearts")
     public ResponseEntity<?> postHeart(@PathVariable("postId") Long postId) {
-        PostHeart postHeart =heartService.postHeart(postId);
+        PostHeart postHeart = heartService.postHeart(postId);
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("message", postHeart.getPost().getTitle() + "-> 좋아요 성공");
@@ -37,12 +37,12 @@ public class HeartController {
     }
 
     // 댓글 좋아요
-    @PostMapping("/comments/{commentId}/heart")
+    @PostMapping("/comments/{commentId}/hearts")
     public ResponseEntity<?> commentHeart(@PathVariable("commentId") Long commentId) {
         CommentHeart commentHeart = heartService.commentHeart(commentId);
 
         Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("message", commentHeart.getComment().getComment() + "-> 좋아요 성공");
+        responseBody.put("message", commentHeart.getComment().getContent() + "-> 좋아요 성공");
 
         return new ResponseEntity<>(responseBody, HttpStatus.CREATED);
     }

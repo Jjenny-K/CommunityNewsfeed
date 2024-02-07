@@ -85,7 +85,7 @@ public class ImageService {
 
         UpdateProfileImageDto updateProfileImageDto = new UpdateProfileImageDto();
         updateProfileImageDto.setUuid(uuid);
-        updateProfileImageDto.setFileName(profileImageFileName);
+        updateProfileImageDto.setFileName(file.getOriginalFilename());
         updateProfileImageDto.setFilePath(profileImageFilePath);
 
         image.updateProfileImage(updateProfileImageDto);

@@ -44,12 +44,12 @@ public class CommentService {
                 .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_POST));
 
         Comment comment = Comment.builder()
-                .commentUser(user)
+                .user(user)
                 .post(post)
-                .comment(commentRequestDto.getComment())
+                .content(commentRequestDto.getContent())
                 .build();
 
-        return commentRequestDto.from(commentRepository.save(comment));
+        return CommentRequestDto.from(commentRepository.save(comment));
     }
 
 }

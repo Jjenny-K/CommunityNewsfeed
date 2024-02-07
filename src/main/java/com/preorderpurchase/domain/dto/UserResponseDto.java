@@ -27,10 +27,6 @@ public class UserResponseDto {
     private String greeting;
 
     @NotNull
-    @Size(min = 3, max = 50)
-    private Set<Authority> authorities;
-
-    @NotNull
     private ProfileImageResponseDto profileImage;
 
     public static UserResponseDto from(CustomUser user) {
@@ -40,7 +36,6 @@ public class UserResponseDto {
                 .email(user.getEmail())
                 .name(user.getName())
                 .greeting(user.getGreeting())
-                .authorities(user.getAuthorities())
                 .profileImage(ProfileImageResponseDto.from(user.getProfileImage()))
                 .build();
     }

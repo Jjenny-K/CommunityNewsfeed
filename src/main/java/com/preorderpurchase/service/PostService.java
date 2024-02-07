@@ -13,7 +13,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -34,21 +33,22 @@ public class PostService {
     // 게시글 작성
     @Transactional
     public PostRequestDto post(PostRequestDto postRequestDto) {
-        CustomUser postUser = SecurityUtil.getCurrentUsername()
+        CustomUser user = SecurityUtil.getCurrentUsername()
                 .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
                 .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."));
 
         Post post = Post.builder()
-                .postUser(postUser)
+                .user(user)
                 .title(postRequestDto.getTitle())
-                .description(postRequestDto.getDescription())
+                .content(postRequestDto.getContent())
                 .build();
 
-        return postRequestDto.from(postRepository.save(post));
+        return PostRequestDto.from(postRepository.save(post));
     }
 
     // 게시글 조회
     // 최신순으로 전부 조회
+    @Transactional(readOnly = true)
     public List<PostResponseDto> getPostList() {
         List<PostResponseDto> postResponseDtoList = new ArrayList<>();
 

@@ -19,11 +19,11 @@ public class CommentController {
     }
 
     // 댓글 작성
-    @PostMapping("/comment")
+    @PostMapping("/comments")
     public ResponseEntity<?> comment(@PathVariable("postId") Long postId, @RequestBody CommentRequestDto commentRequestDto) {
-        CommentRequestDto commentDto = commentService.comment(postId, commentRequestDto);
+        CommentRequestDto comment = commentService.comment(postId, commentRequestDto);
 
-        return new ResponseEntity<>(commentDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(comment, HttpStatus.CREATED);
     }
 
 }

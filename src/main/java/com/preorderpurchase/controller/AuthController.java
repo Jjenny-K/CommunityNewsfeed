@@ -41,7 +41,7 @@ public class AuthController {
 
     // 로그인
     @PostMapping("/login")
-    public ResponseEntity<TokenDto> login(@RequestBody LoginDto loginDto) {
+    public ResponseEntity<?> login(@RequestBody LoginDto loginDto) {
         TokenDto tokenDto = authService.login(loginDto);
 
         HttpHeaders httpHeaders = new HttpHeaders();

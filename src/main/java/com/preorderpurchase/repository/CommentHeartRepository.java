@@ -12,8 +12,8 @@ import java.util.Optional;
 
 public interface CommentHeartRepository extends JpaRepository<CommentHeart, Long> {
 
-    @Query("SELECT ch FROM commentHearts ch WHERE ch.commentHeartUser = :commentHeartUser AND ch.comment = :comment")
-    Optional<CommentHeart> findCommentHeart(@Param("commentHeartUser") CustomUser commentHeartUser, @Param("comment") Comment comment);
-    List<CommentHeart> findByCommentHeartUser(CustomUser user);
+    @Query("SELECT ch FROM commentHearts ch WHERE ch.user = :user AND ch.comment = :comment")
+    Optional<CommentHeart> findCommentHeart(@Param("user") CustomUser user, @Param("comment") Comment comment);
+    List<CommentHeart> findByUser(CustomUser user);
 
 }

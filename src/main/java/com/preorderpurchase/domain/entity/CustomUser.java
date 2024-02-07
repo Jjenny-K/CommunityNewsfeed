@@ -14,13 +14,13 @@ import java.util.Set;
 @Table(name = "users")
 @Getter
 @SuperBuilder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class CustomUser extends BaseCreatedUpdated {
 
     @Id
-    @Column(name = "userId")
+    @Column(name = "userId", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -38,7 +38,7 @@ public class CustomUser extends BaseCreatedUpdated {
     private String greeting;
 
     @JsonIgnore
-    @Column(name = "isActivated")
+    @Column(name = "isActivated", nullable = false)
     private boolean isActivated;
 
     @ManyToMany(fetch = FetchType.LAZY)

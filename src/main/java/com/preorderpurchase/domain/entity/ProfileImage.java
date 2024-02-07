@@ -7,8 +7,8 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-@Entity
-@Table
+@Entity(name = "profileImages")
+@Table(name = "profileImages")
 @Getter
 @SuperBuilder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
