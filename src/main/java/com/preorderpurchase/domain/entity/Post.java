@@ -34,4 +34,7 @@ public class Post extends BaseCreatedUpdated {
     @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
     private List<Comment> commentList;
 
+    @OneToMany(mappedBy = "post", fetch = FetchType.LAZY)
+    private List<PostHeart> postHeartList;
+
 }
