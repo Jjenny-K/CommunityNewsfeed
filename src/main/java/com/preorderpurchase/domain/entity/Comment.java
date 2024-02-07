@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.util.List;
+
 @Entity(name = "comments")
 @Table(name = "comments")
 @Getter
@@ -29,5 +31,8 @@ public class Comment extends BaseCreatedUpdated {
 
     @Column(name = "comment", nullable = false)
     private String comment;
+
+    @OneToMany(mappedBy = "comment", fetch = FetchType.LAZY)
+    private List<CommentHeart> commentHeartList;
 
 }
