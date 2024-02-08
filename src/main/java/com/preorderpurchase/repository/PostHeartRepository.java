@@ -15,5 +15,6 @@ public interface PostHeartRepository extends JpaRepository<PostHeart, Long> {
     @Query("SELECT ph FROM postHearts ph WHERE ph.user = :user AND ph.post = :post")
     Optional<PostHeart> findPostHeart(@Param("user") CustomUser user, @Param("post") Post post);
     List<PostHeart> findByUser(CustomUser user);
+    List<PostHeart> findByPost(Post post);
 
 }

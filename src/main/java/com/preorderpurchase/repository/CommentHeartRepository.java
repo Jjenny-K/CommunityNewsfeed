@@ -15,5 +15,6 @@ public interface CommentHeartRepository extends JpaRepository<CommentHeart, Long
     @Query("SELECT ch FROM commentHearts ch WHERE ch.user = :user AND ch.comment = :comment")
     Optional<CommentHeart> findCommentHeart(@Param("user") CustomUser user, @Param("comment") Comment comment);
     List<CommentHeart> findByUser(CustomUser user);
+    List<CommentHeart> findByComment(Comment comment);
 
 }

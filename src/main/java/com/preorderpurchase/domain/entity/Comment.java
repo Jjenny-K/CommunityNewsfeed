@@ -6,7 +6,6 @@ import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.util.List;
 
 @Entity(name = "comments")
 @Table(name = "comments")
@@ -32,8 +31,5 @@ public class Comment extends BaseCreatedUpdated {
 
     @Column(name = "content", nullable = false)
     private String content;
-
-    @OneToMany(mappedBy = "comment", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY)
-    private List<CommentHeart> commentHeartList;
 
 }

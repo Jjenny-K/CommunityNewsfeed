@@ -133,7 +133,8 @@ public class NewsFeedService {
         List<Post> postList = postRepository.findByUser(user);
         for (Post post : postList) {
             // 게시글에 작성된 댓글
-            for (Comment comment : post.getCommentList()) {
+            List<Comment> commentList = commentRepository.findByPost(post);
+            for (Comment comment : commentList) {
                 String message = comment.getUser().getName() + "님이 "
                         + post.getTitle() + " 포스트에 댓글을 남겼습니다.";
                 LocalDateTime createdAt = comment.getCreatedAt();
@@ -141,7 +142,8 @@ public class NewsFeedService {
                 NewsFeedPostList.add(new NewsFeedResponseDto(message, createdAt));
 
                 // 게시글 내 댓글 좋아요
-                for (CommentHeart commentHeart : comment.getCommentHeartList()) {
+                List<CommentHeart> commentHeartList = commentHeartRepository.findByComment(comment);
+                for (CommentHeart commentHeart : commentHeartList) {
                     message = commentHeart.getUser().getName() + "님이 "
                             + comment.getContent() + " 댓글을 좋아합니다.";
                     createdAt = commentHeart.getCreatedAt();
@@ -151,7 +153,8 @@ public class NewsFeedService {
             }
 
             // 게시글 좋아요
-            for (PostHeart postHeart : post.getPostHeartList()) {
+            List<PostHeart> postHeartList = postHeartRepository.findByPost(post);
+            for (PostHeart postHeart : postHeartList) {
                 String message = postHeart.getUser().getName() + "님이 "
                         + post.getTitle() + " 포스트를 좋아합니다.";
                 LocalDateTime createdAt = postHeart.getCreatedAt();
