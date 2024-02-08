@@ -11,13 +11,13 @@ import lombok.*;
 public class CommentRequestDto {
 
     @NotNull
-    private String comment;
+    private String content;
 
     public static CommentRequestDto from(Comment comment) {
         if (comment == null) return null;
 
         return CommentRequestDto.builder()
-                .comment(comment.getComment())
+                .content(comment.getContent())
                 .build();
     }
 

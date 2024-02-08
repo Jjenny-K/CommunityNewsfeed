@@ -21,7 +21,7 @@ public class FollowController {
     }
 
     // 팔로우
-    @PostMapping("/follow/{friendUserEmail}")
+    @PostMapping("/follows/{friendUserEmail}")
     public ResponseEntity<?> follow(@PathVariable("friendUserEmail") String friendUserEmail) {
         followService.follow(friendUserEmail);
 

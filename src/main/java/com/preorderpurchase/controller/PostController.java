@@ -3,6 +3,7 @@ package com.preorderpurchase.controller;
 import com.preorderpurchase.domain.dto.PostRequestDto;
 import com.preorderpurchase.domain.dto.PostResponseDto;
 import com.preorderpurchase.service.PostService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,12 +22,12 @@ public class PostController {
     }
 
     // 게시글 작성
-    @PostMapping("/post")
+    @PostMapping("/posts")
     @PreAuthorize("hasAnyRole('USER','ADMIN')")
-    public ResponseEntity<?> post(@RequestBody PostRequestDto postRequestDto) {
-        PostRequestDto postDto = postService.post(postRequestDto);
+    public ResponseEntity<?> post(@Valid @RequestBody PostRequestDto postRequestDto) {
+        PostRequestDto post = postService.post(postRequestDto);
 
-        return new ResponseEntity<>(postDto, HttpStatus.CREATED);
+        return new ResponseEntity<>(post, HttpStatus.CREATED);
     }
 
     // 게시글 조회
