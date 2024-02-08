@@ -3,6 +3,7 @@ package com.preorderpurchase.controller;
 import com.preorderpurchase.domain.dto.UpdatePasswordDto;
 import com.preorderpurchase.domain.dto.UserResponseDto;
 import com.preorderpurchase.domain.dto.UpdateUserDto;
+import com.preorderpurchase.service.ImageService;
 import com.preorderpurchase.service.UserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -10,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -21,9 +23,12 @@ import java.util.Map;
 public class UserController {
 
     private final UserService userService;
+    private final ImageService imageService;
 
-    public UserController(UserService userService) {
+    public UserController(UserService userService,
+                          ImageService imageService) {
         this.userService = userService;
+        this.imageService = imageService;
     }
 
     // 본인 정보 조회
@@ -34,8 +39,10 @@ public class UserController {
 
     // 본인 정보 수정
     @PutMapping("/users")
-    public ResponseEntity<?> updateMyUserInfo(@Valid @ModelAttribute UpdateUserDto updateUserDto) throws IOException {
-        userService.updateMyUserInfo(updateUserDto);
+    public ResponseEntity<?> updateMyUserInfo(@Valid @RequestPart(name = "updateUserData") UpdateUserDto updateUserDto,
+                                              @RequestPart(name = "profileImage") MultipartFile updateProfileImage)
+            throws IOException {
+        userService.updateMyUserInfo(updateUserDto, updateProfileImage);
 
         UserResponseDto user = userService.getMyUserInfo();
 

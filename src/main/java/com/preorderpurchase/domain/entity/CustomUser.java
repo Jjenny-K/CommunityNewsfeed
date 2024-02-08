@@ -52,9 +52,9 @@ public class CustomUser extends BaseCreatedUpdated {
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, optional = false)
     private ProfileImage profileImage;
 
-    public void updateUserInfo(UpdateUserDto dto) {
-        if (dto.getName() != null) this.name = dto.getName();
-        if (dto.getGreeting() != null) this.greeting = dto.getGreeting();
+    public void updateUserInfo(UpdateUserDto updateUserDto) {
+        if (updateUserDto.getName() != null) this.name = updateUserDto.getName();
+        if (updateUserDto.getGreeting() != null) this.greeting = updateUserDto.getGreeting();
     }
 
     public void updatePassword(String newPassword) {

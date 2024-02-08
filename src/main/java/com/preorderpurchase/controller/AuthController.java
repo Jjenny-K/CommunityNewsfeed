@@ -1,9 +1,6 @@
 package com.preorderpurchase.controller;
 
-import com.preorderpurchase.domain.dto.LoginDto;
-import com.preorderpurchase.domain.dto.TokenDto;
-import com.preorderpurchase.domain.dto.TokenRequestDto;
-import com.preorderpurchase.domain.dto.UserRequestDto;
+import com.preorderpurchase.domain.dto.*;
 import com.preorderpurchase.jwt.JwtFilter;
 import com.preorderpurchase.service.AuthService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -30,8 +28,10 @@ public class AuthController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<?> signup(@Valid @ModelAttribute UserRequestDto userDto) throws IOException {
-        UserRequestDto user = authService.signup(userDto);
+    public ResponseEntity<?> signup(@Valid @RequestPart(name = "userData") UserRequestDto UserRequestDto,
+                                    @RequestPart(name = "profileImage") MultipartFile profileImage)
+            throws IOException {
+        UserResponseDto user = authService.signup(UserRequestDto, profileImage);
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("message", user.getName() + "-> 회원가입 성공");

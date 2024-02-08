@@ -21,9 +21,9 @@ public class ProfileImage extends Image {
     private CustomUser user;
 
     public void updateProfileImage(UpdateProfileImageDto updateProfileImageDto) {
-        this.setUuid(updateProfileImageDto.getUuid());
-        this.setFileName(updateProfileImageDto.getFileName());
-        this.setFilePath(updateProfileImageDto.getFilePath());
+        this.updateImage(updateProfileImageDto.getUuid(),
+                         updateProfileImageDto.getFileName(),
+                         updateProfileImageDto.getFilePath());
     }
 
 }

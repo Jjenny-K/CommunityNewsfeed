@@ -20,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -54,9 +55,9 @@ public class AuthService {
 
     // 회원가입
     @Transactional
-    public UserRequestDto signup(UserRequestDto userDto) throws IOException {
+    public UserResponseDto signup(UserRequestDto userRequestDto, MultipartFile profileImage) throws IOException {
 
-        if (userRepository.findOneWithAuthoritiesByEmail(userDto.getEmail()).orElse(null) != null) {
+        if (userRepository.findOneWithAuthoritiesByEmail(userRequestDto.getEmail()).orElse(null) != null) {
             throw new CustomApiException(ErrorCode.DUPLICATED_USER_NAME);
         }
 
@@ -64,23 +65,21 @@ public class AuthService {
 
 
         CustomUser user = CustomUser.builder()
-                .email(userDto.getEmail())
-                .password(passwordEncoder.encode(userDto.getPassword()))
-                .name(userDto.getName())
-                .greeting(userDto.getGreeting())
+                .email(userRequestDto.getEmail())
+                .password(passwordEncoder.encode(userRequestDto.getPassword()))
+                .name(userRequestDto.getName())
+                .greeting(userRequestDto.getGreeting())
                 .isActivated(true)
                 .authorities(Collections.singleton(authority))
                 .build();
 
-        UserRequestDto userRequestDto = UserRequestDto.from(userRepository.save(user));
-
-        if (!Objects.requireNonNull(userDto.getProfileImage().getContentType()).startsWith("image")) {
+        if (!Objects.requireNonNull(profileImage.getContentType()).startsWith("image")) {
             throw new RuntimeException("이미지 파일이 아닙니다.");
         }
 
-        imageService.profileImageUpload(new ProfileImageUploadDto((userDto.getProfileImage())), user.getEmail());
+        imageService.profileImageUpload(new ProfileImageUploadDto(profileImage), user.getEmail());
 
-        return userRequestDto;
+        return UserResponseDto.from(userRepository.save(user));
     }
 
     // 로그인

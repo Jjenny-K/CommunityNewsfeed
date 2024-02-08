@@ -11,6 +11,7 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -42,20 +43,22 @@ public class UserService {
 
     // 본인 정보 수정
     @Transactional
-    public void updateMyUserInfo(UpdateUserDto updateUserDto) throws IOException {
+    public void updateMyUserInfo(UpdateUserDto updateUserDto,
+                                 MultipartFile updateProfileImage)
+            throws IOException {
         CustomUser user = SecurityUtil.getCurrentUsername()
                 .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
                 .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."));
 
         user.updateUserInfo(updateUserDto);
 
-        if (updateUserDto.getProfileImage() != null &&
-                !Objects.equals(updateUserDto.getProfileImage().getOriginalFilename(), "")) {
-            if (!Objects.requireNonNull(updateUserDto.getProfileImage().getContentType()).startsWith("image")) {
+        if (updateProfileImage != null &&
+                !Objects.equals(updateProfileImage.getOriginalFilename(), "")) {
+            if (!Objects.requireNonNull(updateProfileImage.getContentType()).startsWith("image")) {
                 throw new RuntimeException("이미지 파일이 아닙니다.");
             }
 
-            imageService.updateProfileImage(new ProfileImageUploadDto(updateUserDto.getProfileImage()), user.getEmail());
+            imageService.updateProfileImage(new ProfileImageUploadDto(updateProfileImage), user.getEmail());
         }
     }
 
