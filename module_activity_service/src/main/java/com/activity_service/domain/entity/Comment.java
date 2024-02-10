@@ -24,9 +24,8 @@ public class Comment extends BaseCreatedUpdated {
     @Column(name = "commentId", nullable = false)
     private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
-    private CustomUser user;
+    @Column(name = "userId", nullable = false)
+    private long userId;
 
     @ManyToOne
     @JoinColumn(name = "postId", nullable = false)

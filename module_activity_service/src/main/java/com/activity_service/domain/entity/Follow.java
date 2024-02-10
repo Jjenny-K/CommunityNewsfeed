@@ -16,15 +16,13 @@ public class Follow extends BaseCreated {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "followId")
+    @Column(name = "followId", nullable = false)
     private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "followerUserId")
-    private CustomUser followerUser;
+    @Column(name = "followerUserId", nullable = false)
+    private long followerUserId;
 
-    @ManyToOne
-    @JoinColumn(name = "followingUserId")
-    private CustomUser followingUser;
+    @Column(name = "followingUserId", nullable = false)
+    private long followingUserId;
 
 }

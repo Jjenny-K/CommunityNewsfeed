@@ -6,7 +6,6 @@ import com.activity_service.domain.dto.PostRequestDto;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,7 +22,6 @@ public class PostController {
 
     // 게시글 작성
     @PostMapping("/posts")
-    @PreAuthorize("hasAnyRole('USER','ADMIN')")
     public ResponseEntity<?> post(@Valid @RequestBody PostRequestDto postRequestDto) {
         PostRequestDto post = postService.post(postRequestDto);
 
