@@ -16,14 +16,14 @@ public class PostRequestDto {
     private String title;
 
     @NotNull
-    private String description;
+    private String content;
 
     public static PostRequestDto from(Post post) {
         if (post == null) return null;
 
         return PostRequestDto.builder()
                 .title(post.getTitle())
-                .description(post.getDescription())
+                .content(post.getContent())
                 .build();
     }
 

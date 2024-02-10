@@ -27,7 +27,7 @@ public class PostResponseDto {
 
         return PostResponseDto.builder()
                 .title(post.getTitle())
-                .postWriter(post.getPostUser().getName())
+                .postWriter(post.getUser().getName())
                 .createdAt(post.getCreatedAt())
                 .build();
     }

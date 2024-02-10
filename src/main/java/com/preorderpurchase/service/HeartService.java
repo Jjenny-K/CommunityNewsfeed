@@ -49,7 +49,7 @@ public class HeartService {
             throw new CustomApiException(ErrorCode.DUPLICATED_POST_HEART);
 
         PostHeart postHeart = PostHeart.builder()
-                .postHeartUser(user)
+                .user(user)
                 .post(post)
                 .build();
 
@@ -71,7 +71,7 @@ public class HeartService {
             throw new CustomApiException(ErrorCode.DUPLICATED_COMMENT_HEART);
 
         CommentHeart commentHeart = CommentHeart.builder()
-                .commentHeartUser(user)
+                .user(user)
                 .comment(comment)
                 .build();
 

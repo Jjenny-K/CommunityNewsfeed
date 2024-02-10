@@ -14,13 +14,13 @@ import java.util.Set;
 @Table(name = "users")
 @Getter
 @SuperBuilder
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 public class CustomUser extends BaseCreatedUpdated {
 
     @Id
-    @Column(name = "userId")
+    @Column(name = "userId", nullable = false)
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -38,7 +38,7 @@ public class CustomUser extends BaseCreatedUpdated {
     private String greeting;
 
     @JsonIgnore
-    @Column(name = "isActivated")
+    @Column(name = "isActivated", nullable = false)
     private boolean isActivated;
 
     @ManyToMany(fetch = FetchType.LAZY)
@@ -52,9 +52,9 @@ public class CustomUser extends BaseCreatedUpdated {
     @OneToOne(mappedBy = "user", cascade = CascadeType.REMOVE, fetch = FetchType.LAZY, optional = false)
     private ProfileImage profileImage;
 
-    public void updateUserInfo(UpdateUserDto dto) {
-        if (dto.getName() != null) this.name = dto.getName();
-        if (dto.getGreeting() != null) this.greeting = dto.getGreeting();
+    public void updateUserInfo(UpdateUserDto updateUserDto) {
+        if (updateUserDto.getName() != null) this.name = updateUserDto.getName();
+        if (updateUserDto.getGreeting() != null) this.greeting = updateUserDto.getGreeting();
     }
 
     public void updatePassword(String newPassword) {
