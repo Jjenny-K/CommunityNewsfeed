@@ -73,13 +73,15 @@ public class AuthService {
                 .authorities(Collections.singleton(authority))
                 .build();
 
+        CustomUser savedUser = userRepository.save(user);
+
         if (!Objects.requireNonNull(profileImage.getContentType()).startsWith("image")) {
             throw new RuntimeException("이미지 파일이 아닙니다.");
         }
 
         imageService.profileImageUpload(new ProfileImageUploadDto(profileImage), user.getEmail());
 
-        return UserResponseDto.from(userRepository.save(user));
+        return UserResponseDto.from(savedUser);
     }
 
     // 로그인
