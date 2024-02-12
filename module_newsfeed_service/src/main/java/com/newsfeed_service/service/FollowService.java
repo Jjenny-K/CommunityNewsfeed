@@ -1,5 +1,7 @@
 package com.newsfeed_service.service;
 
+import com.newsfeed_service.domain.dto.NewsfeedCreateRequestDto;
+import com.newsfeed_service.domain.type.ActivityType;
 import com.newsfeed_service.repository.FollowRepository;
 import com.newsfeed_service.util.SecurityUtil;
 import com.newsfeed_service.domain.entity.CustomUser;
@@ -20,11 +22,14 @@ public class FollowService {
 
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
+    private final NewsfeedService newsfeedService;
 
     public FollowService(UserRepository userRepository,
-                         FollowRepository followRepository) {
+                         FollowRepository followRepository,
+                         NewsfeedService newsfeedService) {
         this.userRepository = userRepository;
         this.followRepository = followRepository;
+        this.newsfeedService = newsfeedService;
     }
 
     // 팔로우
@@ -51,7 +56,16 @@ public class FollowService {
                 .followingUser(followingUser)
                 .build();
 
-        followRepository.save(follow);
+        Follow savedFollow = followRepository.save(follow);
+
+        NewsfeedCreateRequestDto newsfeedCreateRequestDto = NewsfeedCreateRequestDto.builder()
+                .userId(followerUser.getId())
+                .activityType(ActivityType.FOLLOW)
+                .activityId(savedFollow.getId())
+                .relatedUserId(followingUser.getId())
+                .build();
+
+        newsfeedService.createNewsfeed(newsfeedCreateRequestDto);
     }
 
 }

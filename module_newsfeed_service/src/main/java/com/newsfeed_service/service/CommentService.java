@@ -1,7 +1,9 @@
 package com.newsfeed_service.service;
 
 import com.newsfeed_service.domain.dto.CommentRequestDto;
+import com.newsfeed_service.domain.dto.NewsfeedCreateRequestDto;
 import com.newsfeed_service.domain.entity.Comment;
+import com.newsfeed_service.domain.type.ActivityType;
 import com.newsfeed_service.util.SecurityUtil;
 import com.newsfeed_service.domain.entity.CustomUser;
 import com.newsfeed_service.domain.entity.Post;
@@ -24,13 +26,16 @@ public class CommentService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
     private final CommentRepository commentRepository;
+    private final NewsfeedService newsfeedService;
 
     public CommentService(UserRepository userRepository,
                           PostRepository postRepository,
-                          CommentRepository commentRepository) {
+                          CommentRepository commentRepository,
+                          NewsfeedService newsfeedService) {
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
+        this.newsfeedService = newsfeedService;
     }
 
     // 댓글 작성
@@ -49,7 +54,18 @@ public class CommentService {
                 .content(commentRequestDto.getContent())
                 .build();
 
-        return CommentRequestDto.from(commentRepository.save(comment));
+        Comment savedComment = commentRepository.save(comment);
+
+        NewsfeedCreateRequestDto newsfeedCreateRequestDto = NewsfeedCreateRequestDto.builder()
+                .userId(user.getId())
+                .activityType(ActivityType.COMMENT)
+                .activityId(savedComment.getId())
+                .relatedUserId(post.getUser().getId())
+                .build();
+
+        newsfeedService.createNewsfeed(newsfeedCreateRequestDto);
+
+        return CommentRequestDto.from(savedComment);
     }
 
 }

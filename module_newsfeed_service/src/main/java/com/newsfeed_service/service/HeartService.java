@@ -1,6 +1,8 @@
 package com.newsfeed_service.service;
 
+import com.newsfeed_service.domain.dto.NewsfeedCreateRequestDto;
 import com.newsfeed_service.domain.entity.*;
+import com.newsfeed_service.domain.type.ActivityType;
 import com.newsfeed_service.repository.*;
 import com.newsfeed_service.util.SecurityUtil;
 import com.newsfeed_service.exception.CustomApiException;
@@ -21,17 +23,20 @@ public class HeartService {
     private final CommentRepository commentRepository;
     private final PostHeartRepository postHeartRepository;
     private final CommentHeartRepository commentHeartRepository;
+    private final NewsfeedService newsfeedService;
 
     public HeartService(UserRepository userRepository,
                         PostRepository postRepository,
                         CommentRepository commentRepository,
                         PostHeartRepository postHeartRepository,
-                        CommentHeartRepository commentHeartRepository) {
+                        CommentHeartRepository commentHeartRepository,
+                        NewsfeedService newsfeedService) {
         this.userRepository = userRepository;
         this.postRepository = postRepository;
         this.commentRepository = commentRepository;
         this.postHeartRepository = postHeartRepository;
         this.commentHeartRepository = commentHeartRepository;
+        this.newsfeedService = newsfeedService;
     }
 
     // 게시글 좋아요
@@ -53,10 +58,21 @@ public class HeartService {
                 .post(post)
                 .build();
 
-        return postHeartRepository.save(postHeart);
+        PostHeart savedPostHeart = postHeartRepository.save(postHeart);
+
+        NewsfeedCreateRequestDto newsfeedCreateRequestDto = NewsfeedCreateRequestDto.builder()
+                .userId(user.getId())
+                .activityType(ActivityType.POST_HEART)
+                .activityId(savedPostHeart.getId())
+                .relatedUserId(post.getUser().getId())
+                .build();
+
+        newsfeedService.createNewsfeed(newsfeedCreateRequestDto);
+
+        return savedPostHeart;
     }
 
-    // 게시글 좋아요
+    // 댓글 좋아요
     @Transactional
     public CommentHeart commentHeart(Long commentId) {
         CustomUser user = SecurityUtil.getCurrentUsername()
@@ -75,7 +91,18 @@ public class HeartService {
                 .comment(comment)
                 .build();
 
-        return commentHeartRepository.save(commentHeart);
+        CommentHeart savedCommentHeart = commentHeartRepository.save(commentHeart);
+
+        NewsfeedCreateRequestDto newsfeedCreateRequestDto = NewsfeedCreateRequestDto.builder()
+                .userId(user.getId())
+                .activityType(ActivityType.POST_HEART)
+                .activityId(savedCommentHeart.getId())
+                .relatedUserId(comment.getUser().getId())
+                .build();
+
+        newsfeedService.createNewsfeed(newsfeedCreateRequestDto);
+
+        return savedCommentHeart;
     }
 
 }

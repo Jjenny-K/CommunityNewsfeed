@@ -1,7 +1,7 @@
 package com.newsfeed_service.controller;
 
-import com.newsfeed_service.domain.dto.NewsFeedResponseDto;
-import com.newsfeed_service.service.NewsFeedService;
+import com.newsfeed_service.domain.dto.NewsfeedResponseDto;
+import com.newsfeed_service.service.NewsfeedService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,22 +15,22 @@ import java.util.List;
 @PreAuthorize("hasAnyRole('USER','ADMIN')")
 public class NewsFeedController {
 
-    private final NewsFeedService newsFeedService;
+    private final NewsfeedService newsfeedService;
 
-    public NewsFeedController(NewsFeedService newsFeedService) {
-        this.newsFeedService = newsFeedService;
+    public NewsFeedController(NewsfeedService newsfeedService) {
+        this.newsfeedService = newsfeedService;
     }
 
     // 팔로우 뉴스피드
     @GetMapping("/follows")
-    public ResponseEntity<List<NewsFeedResponseDto>> getFollowingList() {
-        return ResponseEntity.ok().body(newsFeedService.getNewsFeedFollowList());
+    public ResponseEntity<List<NewsfeedResponseDto>> getNewsfeedFollowList() {
+        return ResponseEntity.ok().body(newsfeedService.getNewsfeedFollowList());
     }
 
     // 게시물 뉴스피드
     @GetMapping("/posts")
-    public ResponseEntity<List<NewsFeedResponseDto>> getPostList() {
-        return ResponseEntity.ok().body(newsFeedService.getNewsFeedPostList());
+    public ResponseEntity<List<NewsfeedResponseDto>> getNewsfeedPostList() {
+        return ResponseEntity.ok().body(newsfeedService.getNewsfeedPostList());
     }
 
 }
