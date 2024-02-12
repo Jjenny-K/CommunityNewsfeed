@@ -95,9 +95,9 @@ public class HeartService {
 
         NewsfeedCreateRequestDto newsfeedCreateRequestDto = NewsfeedCreateRequestDto.builder()
                 .userId(user.getId())
-                .activityType(ActivityType.POST_HEART)
+                .activityType(ActivityType.COMMENT_HEART)
                 .activityId(savedCommentHeart.getId())
-                .relatedUserId(comment.getUser().getId())
+                .relatedUserId(comment.getPost().getUser().getId())
                 .build();
 
         newsfeedService.createNewsfeed(newsfeedCreateRequestDto);

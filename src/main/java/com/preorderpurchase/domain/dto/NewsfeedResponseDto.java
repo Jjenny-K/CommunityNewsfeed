@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class NewsFeedResponseDto {
+public class NewsfeedResponseDto {
 
     private String message;
 

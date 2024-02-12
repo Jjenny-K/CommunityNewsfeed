@@ -1,10 +1,12 @@
 package com.newsfeed_service.service;
 
 import com.newsfeed_service.domain.dto.NewsfeedCreateRequestDto;
-import com.newsfeed_service.domain.entity.*;
-import com.newsfeed_service.domain.type.ActivityType;
-import com.newsfeed_service.repository.*;
 import com.newsfeed_service.domain.dto.NewsfeedResponseDto;
+import com.newsfeed_service.domain.entity.CustomUser;
+import com.newsfeed_service.domain.entity.Newsfeed;
+import com.newsfeed_service.domain.type.ActivityType;
+import com.newsfeed_service.repository.NewsfeedRepository;
+import com.newsfeed_service.repository.UserRepository;
 import com.newsfeed_service.util.SecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,8 +83,13 @@ public class NewsfeedService {
                 .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
                 .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."));
 
-        List<Newsfeed> newsfeedPostList = new ArrayList<>();
+        // 사용자가 작성한 게시글 내 활동
+        List<ActivityType> activityTypes =
+                new ArrayList<>(
+                        Arrays.asList(ActivityType.COMMENT, ActivityType.POST_HEART, ActivityType.COMMENT_HEART));
 
+        List<Newsfeed> newsfeedPostList =
+                newsfeedRepository.findByRelatedUserIdAndActivityTypes(user.getId(), activityTypes);
 
         return newsfeedPostList.stream()
                 .map(NewsfeedResponseDto::from)
