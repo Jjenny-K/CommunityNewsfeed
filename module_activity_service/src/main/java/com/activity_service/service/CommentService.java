@@ -1,6 +1,8 @@
 package com.activity_service.service;
 
+import com.activity_service.domain.dto.NewsfeedCreateRequestDto;
 import com.activity_service.domain.entity.Comment;
+import com.activity_service.domain.type.ActivityType;
 import com.activity_service.exception.ErrorCode;
 //import com.activity_service.util.SecurityUtil;
 import com.activity_service.domain.dto.CommentRequestDto;
@@ -38,8 +40,8 @@ public class CommentService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_POST));
 
-        /*
-         * TODO : user_service, api gateway, ... - userId 연동 필요 (임의 사용자 지정)
+        /**
+         * TODO : user_service, api gateway, ... - userId 값 연동 필요 (임의 사용자 지정)
          * userId = 1
          */
 
@@ -49,7 +51,22 @@ public class CommentService {
                 .content(commentRequestDto.getContent())
                 .build();
 
-        return CommentRequestDto.from(commentRepository.save(comment));
+        Comment savedComment = commentRepository.save(comment);
+
+        NewsfeedCreateRequestDto newsfeedCreateRequestDto = NewsfeedCreateRequestDto.builder()
+                .userId(1)
+                .activityType(ActivityType.COMMENT)
+                .activityId(savedComment.getId())
+                .relatedUserId(post.getUserId())
+                .build();
+
+        /**
+         * TODO : newsfeed_service - newsfeedCreateRequestDto create 연동 필요(임시 삭제)
+         */
+
+//        newsfeedService.createNewsfeed(newsfeedCreateRequestDto);
+
+        return CommentRequestDto.from(savedComment);
     }
 
 }

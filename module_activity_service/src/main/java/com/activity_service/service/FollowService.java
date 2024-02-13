@@ -1,6 +1,8 @@
 package com.activity_service.service;
 
+import com.activity_service.domain.dto.NewsfeedCreateRequestDto;
 import com.activity_service.domain.entity.Follow;
+import com.activity_service.domain.type.ActivityType;
 import com.activity_service.exception.CustomApiException;
 import com.activity_service.exception.ErrorCode;
 import com.activity_service.repository.FollowRepository;
@@ -33,8 +35,8 @@ public class FollowService {
 //                userRepository.findOneWithAuthoritiesWithProFileImageByEmail(friendUserEmail)
 //                        .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_USER));
 
-        /*
-         * TODO : user_service, api gateway, ... - userId 연동 필요 (임의 사용자 지정)
+        /**
+         * TODO : user_service, api gateway, ... - userId 값 연동 필요 (임의 사용자 지정)
          * followerUserId = 1, followingUserId = 2
          */
 
@@ -54,7 +56,20 @@ public class FollowService {
                 .followingUserId(followingUserId)
                 .build();
 
-        followRepository.save(follow);
+        Follow savedFollow = followRepository.save(follow);
+
+        NewsfeedCreateRequestDto newsfeedCreateRequestDto = NewsfeedCreateRequestDto.builder()
+                .userId(1)
+                .activityType(ActivityType.FOLLOW)
+                .activityId(savedFollow.getId())
+                .relatedUserId(2)
+                .build();
+
+        /**
+         * TODO : newsfeed_service - newsfeedCreateRequestDto create 연동 필요(임시 삭제)
+         */
+
+//        newsfeedService.createNewsfeed(newsfeedCreateRequestDto);
     }
 
 }

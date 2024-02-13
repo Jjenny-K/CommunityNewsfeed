@@ -1,9 +1,11 @@
 package com.activity_service.service;
 
 //import com.activity_service.util.SecurityUtil;
+import com.activity_service.domain.dto.NewsfeedCreateRequestDto;
 import com.activity_service.domain.dto.PostRequestDto;
 import com.activity_service.domain.dto.PostResponseDto;
 import com.activity_service.domain.entity.Post;
+import com.activity_service.domain.type.ActivityType;
 import com.activity_service.repository.PostRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,8 +34,8 @@ public class PostService {
 //                .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
 //                .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."));
 
-        /*
-         * TODO : user_service, api gateway, ... - userId 연동 필요 (임의 사용자 지정)
+        /**
+         * TODO : user_service, api gateway, ... - userId 값 연동 필요 (임의 사용자 지정)
          * userId = 1
          */
 
@@ -43,7 +45,21 @@ public class PostService {
                 .content(postRequestDto.getContent())
                 .build();
 
-        return PostRequestDto.from(postRepository.save(post));
+        Post savedPost = postRepository.save(post);
+
+        NewsfeedCreateRequestDto newsfeedCreateRequestDto = NewsfeedCreateRequestDto.builder()
+                .userId(1)
+                .activityType(ActivityType.POST)
+                .activityId(savedPost.getId())
+                .build();
+
+        /**
+         * TODO : newsfeed_service - newsfeedCreateRequestDto create 연동 필요(임시 삭제)
+         */
+
+//        newsfeedService.createNewsfeed(newsfeedCreateRequestDto);
+
+        return PostRequestDto.from(savedPost);
     }
 
     // 게시글 조회

@@ -1,6 +1,8 @@
 package com.activity_service.service;
 
+import com.activity_service.domain.dto.NewsfeedCreateRequestDto;
 import com.activity_service.domain.entity.*;
+import com.activity_service.domain.type.ActivityType;
 import com.activity_service.exception.CustomApiException;
 import com.activity_service.exception.ErrorCode;
 import com.activity_service.repository.*;
@@ -41,8 +43,8 @@ public class HeartService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_POST));
 
-        /*
-         * TODO : user_service, api gateway, ... - userId 연동 필요 (임의 사용자 지정)
+        /**
+         * TODO : user_service, api gateway, ... - userId 값 연동 필요 (임의 사용자 지정)
          * userId = 1
          */
 
@@ -57,7 +59,22 @@ public class HeartService {
                 .post(post)
                 .build();
 
-        return postHeartRepository.save(postHeart);
+        PostHeart savedPostHeart = postHeartRepository.save(postHeart);
+
+        NewsfeedCreateRequestDto newsfeedCreateRequestDto = NewsfeedCreateRequestDto.builder()
+                .userId(userId)
+                .activityType(ActivityType.POST_HEART)
+                .activityId(savedPostHeart.getId())
+                .relatedUserId(post.getUserId())
+                .build();
+
+        /**
+         * TODO : newsfeed_service - newsfeedCreateRequestDto create 연동 필요(임시 삭제)
+         */
+
+//        newsfeedService.createNewsfeed(newsfeedCreateRequestDto);
+
+        return savedPostHeart;
     }
 
     // 게시글 좋아요
@@ -70,8 +87,8 @@ public class HeartService {
         Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_COMMENT));
 
-        /*
-         * TODO : user_service, api gateway, ... - userId 연동 필요 (임의 사용자 지정)
+        /**
+         * TODO : user_service, api gateway, ... - userId 값 연동 필요 (임의 사용자 지정)
          * userId = 1
          */
 
@@ -86,7 +103,22 @@ public class HeartService {
                 .comment(comment)
                 .build();
 
-        return commentHeartRepository.save(commentHeart);
+        CommentHeart savedCommentHeart = commentHeartRepository.save(commentHeart);
+
+        NewsfeedCreateRequestDto newsfeedCreateRequestDto = NewsfeedCreateRequestDto.builder()
+                .userId(userId)
+                .activityType(ActivityType.COMMENT_HEART)
+                .activityId(savedCommentHeart.getId())
+                .relatedUserId(comment.getPost().getUserId())
+                .build();
+
+        /**
+         * TODO : newsfeed_service - newsfeedCreateRequestDto create 연동 필요(임시 삭제)
+         */
+
+//        newsfeedService.createNewsfeed(newsfeedCreateRequestDto);
+
+        return savedCommentHeart;
     }
 
 }
