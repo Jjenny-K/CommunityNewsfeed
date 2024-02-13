@@ -3,7 +3,6 @@ package com.newsfeed_service.controller;
 import com.newsfeed_service.domain.dto.NewsfeedResponseDto;
 import com.newsfeed_service.service.NewsfeedService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,7 +11,6 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/newsfeeds")
-@PreAuthorize("hasAnyRole('USER','ADMIN')")
 public class NewsFeedController {
 
     private final NewsfeedService newsfeedService;

@@ -2,15 +2,13 @@ package com.newsfeed_service.service;
 
 import com.newsfeed_service.domain.dto.NewsfeedCreateRequestDto;
 import com.newsfeed_service.domain.dto.NewsfeedResponseDto;
-import com.newsfeed_service.domain.entity.CustomUser;
 import com.newsfeed_service.domain.entity.Newsfeed;
 import com.newsfeed_service.domain.type.ActivityType;
 import com.newsfeed_service.repository.NewsfeedRepository;
-import com.newsfeed_service.repository.UserRepository;
-import com.newsfeed_service.util.SecurityUtil;
+//import com.newsfeed_service.util.SecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.security.authentication.BadCredentialsException;
+//import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,12 +23,9 @@ public class NewsfeedService {
 
     private static final Logger logger = LoggerFactory.getLogger(NewsfeedService.class);
 
-    private final UserRepository userRepository;
     private final NewsfeedRepository newsfeedRepository;
 
-    public NewsfeedService(UserRepository userRepository,
-                           NewsfeedRepository newsfeedRepository) {
-        this.userRepository = userRepository;
+    public NewsfeedService(NewsfeedRepository newsfeedRepository) {
         this.newsfeedRepository = newsfeedRepository;
     }
 
@@ -50,15 +45,20 @@ public class NewsfeedService {
     // 팔로우 뉴스피드
     @Transactional(readOnly = true)
     public List<NewsfeedResponseDto> getNewsfeedFollowList() {
-        CustomUser user = SecurityUtil.getCurrentUsername()
-                .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
-                .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."));
+//        CustomUser user = SecurityUtil.getCurrentUsername()
+//                .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
+//                .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."));
+
+        /**
+         * TODO : user_service, api gateway, ... - userId 값 연동 필요(임의 사용자 지정)
+         * userId = 1
+         */
 
         List<Newsfeed> newsfeedFollowList = new ArrayList<>();
 
         // 사용자가 팔로잉하는 사용자들의 활동
         List<Newsfeed> followingList =
-                newsfeedRepository.findByUserIdAndActivityType(user.getId(), ActivityType.FOLLOW);
+                newsfeedRepository.findByUserIdAndActivityType(1, ActivityType.FOLLOW);
 
         for (Newsfeed following : followingList) {
             newsfeedFollowList.addAll(newsfeedRepository.findByUserId(following.getRelatedUserId()));
@@ -66,7 +66,7 @@ public class NewsfeedService {
 
         // 사용자를 팔로잉하는 사용자
         List<Newsfeed> followerList =
-                newsfeedRepository.findByRelatedUserIdAndActivityType(user.getId(), ActivityType.FOLLOW);
+                newsfeedRepository.findByRelatedUserIdAndActivityType(1, ActivityType.FOLLOW);
 
         newsfeedFollowList.addAll(followerList);
 
@@ -79,9 +79,14 @@ public class NewsfeedService {
     // 게시글 뉴스피드
     @Transactional(readOnly = true)
     public List<NewsfeedResponseDto> getNewsfeedPostList() {
-        CustomUser user = SecurityUtil.getCurrentUsername()
-                .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
-                .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."));
+//        CustomUser user = SecurityUtil.getCurrentUsername()
+//                .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
+//                .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."));
+
+        /**
+         * TODO : user_service, api gateway, ... - userId 값 연동 필요(임의 사용자 지정)
+         * userId = 1
+         */
 
         // 사용자가 작성한 게시글 내 활동
         List<ActivityType> activityTypes =
@@ -89,7 +94,7 @@ public class NewsfeedService {
                         Arrays.asList(ActivityType.COMMENT, ActivityType.POST_HEART, ActivityType.COMMENT_HEART));
 
         List<Newsfeed> newsfeedPostList =
-                newsfeedRepository.findByRelatedUserIdAndActivityTypes(user.getId(), activityTypes);
+                newsfeedRepository.findByRelatedUserIdAndActivityTypes(1, activityTypes);
 
         return newsfeedPostList.stream()
                 .map(NewsfeedResponseDto::from)
