@@ -25,12 +25,12 @@ public class PostResponseDto {
     @JsonSerialize(using = InstantSerializer.class)
     private LocalDateTime createdAt;
 
-    public static PostResponseDto from(Post post) {
+    public static PostResponseDto from(Post post, String postWriter) {
         if (post == null) return null;
 
         return PostResponseDto.builder()
                 .title(post.getTitle())
-                .postWriter(post.getUser().getName())
+                .postWriter(postWriter)
                 .createdAt(post.getCreatedAt())
                 .build();
     }

@@ -1,8 +1,9 @@
-package com.newsfeed_service.controller;
+package com.preorderpurchase.controller;
 
-import com.newsfeed_service.domain.dto.NewsfeedResponseDto;
-import com.newsfeed_service.service.NewsfeedService;
+import com.preorderpurchase.domain.dto.NewsfeedResponseDto;
+import com.preorderpurchase.service.NewsfeedService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -11,11 +12,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/newsfeeds")
-public class NewsFeedController {
+@PreAuthorize("hasAnyRole('USER','ADMIN')")
+public class NewsfeedController {
 
     private final NewsfeedService newsfeedService;
 
-    public NewsFeedController(NewsfeedService newsfeedService) {
+    public NewsfeedController(NewsfeedService newsfeedService) {
         this.newsfeedService = newsfeedService;
     }
 

@@ -19,12 +19,11 @@ public class CommentHeart extends BaseCreated {
     @Column(name = "commentHeartId")
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    private CustomUser user;
+    @Column(name = "userId", nullable = false)
+    private long userId;
 
     @ManyToOne
-    @JoinColumn(name = "commentId")
+    @JoinColumn(name = "commentId", nullable = false)
     private Comment comment;
 
 }

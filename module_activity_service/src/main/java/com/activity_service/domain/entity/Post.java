@@ -24,9 +24,8 @@ public class Post extends BaseCreatedUpdated {
     @Column(name = "postId", nullable = false)
     private long id;
 
-    @ManyToOne
-    @JoinColumn(name = "userId", nullable = false)
-    private CustomUser user;
+    @Column(name = "userId", nullable = false)
+    private long userId;
 
     @Column(name = "title", nullable = false, length = 100)
     private String title;
