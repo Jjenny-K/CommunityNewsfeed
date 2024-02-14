@@ -1,15 +1,15 @@
 package com.activity_service.service;
 
+import com.activity_service.client.NewsfeedFeignClient;
+import com.activity_service.client.UserFeignClient;
 import com.activity_service.domain.dto.NewsfeedCreateRequestDto;
 import com.activity_service.domain.entity.Follow;
 import com.activity_service.domain.type.ActivityType;
 import com.activity_service.exception.CustomApiException;
 import com.activity_service.exception.ErrorCode;
 import com.activity_service.repository.FollowRepository;
-//import com.activity_service.util.SecurityUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,29 +19,21 @@ public class FollowService {
     private static final Logger logger = LoggerFactory.getLogger(FollowService.class);
 
     private final FollowRepository followRepository;
+    private final UserFeignClient userFeignClient;
+    private final NewsfeedFeignClient newsfeedFeignClient;
 
-    public FollowService(FollowRepository followRepository) {
+    public FollowService(FollowRepository followRepository,
+                         UserFeignClient userFeignClient,
+                         NewsfeedFeignClient newsfeedFeignClient) {
         this.followRepository = followRepository;
+        this.userFeignClient = userFeignClient;
+        this.newsfeedFeignClient = newsfeedFeignClient;
     }
 
     // 팔로우
     @Transactional
-    public void follow(String friendUserEmail) {
-//        CustomUser followerUser = SecurityUtil.getCurrentUsername()
-//                .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
-//                .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."));
-
-//        CustomUser followingUser =
-//                userRepository.findOneWithAuthoritiesWithProFileImageByEmail(friendUserEmail)
-//                        .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_USER));
-
-        /**
-         * TODO : user_service, api gateway, ... - userId 값 연동 필요 (임의 사용자 지정)
-         * followerUserId = 1, followingUserId = 2
-         */
-
-        long followerUserId = 1;
-        long followingUserId = 2;
+    public void follow(long followerUserId, String friendUserEmail) {
+        long followingUserId = userFeignClient.findUserId(friendUserEmail);
 
         // 자기 자신 follow 방지
         if (followerUserId == followingUserId)
@@ -59,17 +51,13 @@ public class FollowService {
         Follow savedFollow = followRepository.save(follow);
 
         NewsfeedCreateRequestDto newsfeedCreateRequestDto = NewsfeedCreateRequestDto.builder()
-                .userId(1)
+                .userId(followerUserId)
                 .activityType(ActivityType.FOLLOW)
                 .activityId(savedFollow.getId())
-                .relatedUserId(2)
+                .relatedUserId(followingUserId)
                 .build();
 
-        /**
-         * TODO : newsfeed_service - newsfeedCreateRequestDto create 연동 필요(임시 삭제)
-         */
-
-//        newsfeedService.createNewsfeed(newsfeedCreateRequestDto);
+        newsfeedFeignClient.createNewsfeed(newsfeedCreateRequestDto);
     }
 
 }

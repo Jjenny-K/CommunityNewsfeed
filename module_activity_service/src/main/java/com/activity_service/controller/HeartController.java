@@ -3,6 +3,7 @@ package com.activity_service.controller;
 import com.activity_service.domain.entity.CommentHeart;
 import com.activity_service.domain.entity.PostHeart;
 import com.activity_service.service.HeartService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,8 +26,10 @@ public class HeartController {
 
     // 게시글 좋아요
     @PostMapping("/hearts")
-    public ResponseEntity<?> postHeart(@PathVariable("postId") Long postId) {
-        PostHeart postHeart = heartService.postHeart(postId);
+    public ResponseEntity<?> postHeart(HttpServletRequest request,
+                                       @PathVariable("postId") Long postId) {
+        long userId = Long.parseLong(request.getHeader("X-USER-ID"));
+        PostHeart postHeart = heartService.postHeart(userId, postId);
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("message", postHeart.getPost().getTitle() + "-> 좋아요 성공");
@@ -36,8 +39,10 @@ public class HeartController {
 
     // 댓글 좋아요
     @PostMapping("/comments/{commentId}/hearts")
-    public ResponseEntity<?> commentHeart(@PathVariable("commentId") Long commentId) {
-        CommentHeart commentHeart = heartService.commentHeart(commentId);
+    public ResponseEntity<?> commentHeart(HttpServletRequest request,
+                                          @PathVariable("commentId") Long commentId) {
+        long userId = Long.parseLong(request.getHeader("X-USER-ID"));
+        CommentHeart commentHeart = heartService.commentHeart(userId, commentId);
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("message", commentHeart.getComment().getContent() + "-> 좋아요 성공");

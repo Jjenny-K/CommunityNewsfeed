@@ -1,6 +1,7 @@
 package com.activity_service.service;
 
-//import com.activity_service.util.SecurityUtil;
+import com.activity_service.client.NewsfeedFeignClient;
+import com.activity_service.client.UserFeignClient;
 import com.activity_service.domain.dto.NewsfeedCreateRequestDto;
 import com.activity_service.domain.dto.PostRequestDto;
 import com.activity_service.domain.dto.PostResponseDto;
@@ -9,7 +10,6 @@ import com.activity_service.domain.type.ActivityType;
 import com.activity_service.repository.PostRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-//import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,25 +22,22 @@ public class PostService {
     private static final Logger logger = LoggerFactory.getLogger(PostService.class);
 
     private final PostRepository postRepository;
+    private final UserFeignClient userFeignClient;
+    private final NewsfeedFeignClient newsfeedFeignClient;
 
-    public PostService(PostRepository postRepository) {
+    public PostService(PostRepository postRepository,
+                       UserFeignClient userFeignClient,
+                       NewsfeedFeignClient newsfeedFeignClient) {
         this.postRepository = postRepository;
+        this.userFeignClient = userFeignClient;
+        this.newsfeedFeignClient = newsfeedFeignClient;
     }
 
     // 게시글 작성
     @Transactional
-    public PostRequestDto post(PostRequestDto postRequestDto) {
-//        CustomUser user = SecurityUtil.getCurrentUsername()
-//                .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
-//                .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."));
-
-        /**
-         * TODO : user_service, api gateway, ... - userId 값 연동 필요 (임의 사용자 지정)
-         * userId = 1
-         */
-
+    public PostRequestDto post(PostRequestDto postRequestDto, long userId) {
         Post post = Post.builder()
-                .userId(1)
+                .userId(userId)
                 .title(postRequestDto.getTitle())
                 .content(postRequestDto.getContent())
                 .build();
@@ -48,16 +45,12 @@ public class PostService {
         Post savedPost = postRepository.save(post);
 
         NewsfeedCreateRequestDto newsfeedCreateRequestDto = NewsfeedCreateRequestDto.builder()
-                .userId(1)
+                .userId(userId)
                 .activityType(ActivityType.POST)
                 .activityId(savedPost.getId())
                 .build();
 
-        /**
-         * TODO : newsfeed_service - newsfeedCreateRequestDto create 연동 필요(임시 삭제)
-         */
-
-//        newsfeedService.createNewsfeed(newsfeedCreateRequestDto);
+        newsfeedFeignClient.createNewsfeed(newsfeedCreateRequestDto);
 
         return PostRequestDto.from(savedPost);
     }
@@ -68,11 +61,11 @@ public class PostService {
     public List<PostResponseDto> getPostList() {
         List<PostResponseDto> postResponseDtoList = new ArrayList<>();
 
-        // TODO : user_service - userName 연결 필요(임의 사용자 지정)
-
         List<Post> postList = postRepository.findAllByOrderByCreatedAtDesc();
         for (Post post : postList) {
-            postResponseDtoList.add(PostResponseDto.from(post, "test"));
+            String userName = userFeignClient.findUserName(String.valueOf(post.getUserId()));
+
+            postResponseDtoList.add(PostResponseDto.from(post, userName));
         }
 
         return postResponseDtoList;

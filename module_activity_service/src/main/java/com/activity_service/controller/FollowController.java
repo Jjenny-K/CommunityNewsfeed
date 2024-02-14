@@ -1,6 +1,7 @@
 package com.activity_service.controller;
 
 import com.activity_service.service.FollowService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,13 +24,16 @@ public class FollowController {
 
     // 팔로우
     @PostMapping("/follows/{friendUserEmail}")
-    public ResponseEntity<?> follow(@PathVariable("friendUserEmail") String friendUserEmail) {
-        followService.follow(friendUserEmail);
+    public ResponseEntity<?> follow(HttpServletRequest request,
+                                    @PathVariable("friendUserEmail") String friendUserEmail) {
+        long followerUserId = Long.parseLong(request.getHeader("X-USER-ID"));
+
+        followService.follow(followerUserId, friendUserEmail);
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("message", "팔로우 성공");
 
-        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+        return new ResponseEntity<>(responseBody, HttpStatus.CREATED);
     }
 
 }
