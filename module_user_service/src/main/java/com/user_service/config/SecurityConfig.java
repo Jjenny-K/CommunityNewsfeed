@@ -60,7 +60,8 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/signup",
                                 "/api/login",
-                                "/api/posts"
+                                "/api/posts",
+                                "/api/internal/**"
                         )
                         .permitAll()
                         .anyRequest().authenticated()

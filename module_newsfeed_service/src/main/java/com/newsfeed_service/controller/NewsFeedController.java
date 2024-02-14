@@ -2,6 +2,7 @@ package com.newsfeed_service.controller;
 
 import com.newsfeed_service.domain.dto.NewsfeedResponseDto;
 import com.newsfeed_service.service.NewsfeedService;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,14 +22,18 @@ public class NewsFeedController {
 
     // 팔로우 뉴스피드
     @GetMapping("/follows")
-    public ResponseEntity<List<NewsfeedResponseDto>> getNewsfeedFollowList() {
-        return ResponseEntity.ok().body(newsfeedService.getNewsfeedFollowList());
+    public ResponseEntity<List<NewsfeedResponseDto>> getNewsfeedFollowList(HttpServletRequest request) {
+        long userId = Long.parseLong(request.getHeader("X-USER-ID"));
+
+        return ResponseEntity.ok().body(newsfeedService.getNewsfeedFollowList(userId));
     }
 
     // 게시물 뉴스피드
     @GetMapping("/posts")
-    public ResponseEntity<List<NewsfeedResponseDto>> getNewsfeedPostList() {
-        return ResponseEntity.ok().body(newsfeedService.getNewsfeedPostList());
+    public ResponseEntity<List<NewsfeedResponseDto>> getNewsfeedPostList(HttpServletRequest request) {
+        long userId = Long.parseLong(request.getHeader("X-USER-ID"));
+
+        return ResponseEntity.ok().body(newsfeedService.getNewsfeedPostList(userId));
     }
 
 }

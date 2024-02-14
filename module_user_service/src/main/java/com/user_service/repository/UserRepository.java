@@ -13,6 +13,8 @@ public interface UserRepository extends JpaRepository<CustomUser, Long> {
     Optional<CustomUser> findOneWithAuthoritiesByEmail(String email);
     @EntityGraph(attributePaths = {"authorities", "profileImage"})
     Optional<CustomUser> findOneWithAuthoritiesWithProFileImageByEmail(String email);
+    @EntityGraph(attributePaths = {"authorities", "profileImage"})
+    Optional<CustomUser> findOneWithAuthoritiesWithProFileImageById(long userId);
 
 }
 
