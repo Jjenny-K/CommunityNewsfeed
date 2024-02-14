@@ -1,4 +1,8 @@
 rootProject.name = 'preorderpurchase'
+
 include 'module_user_service'
 include 'module_activity_service'
 include 'module_newsfeed_service'
+
+include 'module_eureka'
+include 'module_api_gateway'
