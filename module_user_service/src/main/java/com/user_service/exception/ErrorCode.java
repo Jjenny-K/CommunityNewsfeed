@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 @AllArgsConstructor
 public enum ErrorCode {
 
-    UNKNOWN_ERROR(HttpStatus.UNAUTHORIZED, 1001, "토큰이 존재하지 않습니다."),
+    UNKNOWN_ERROR(HttpStatus.UNAUTHORIZED, 1001, "토큰이 유효하지 않습니다."),
     WRONG_TYPE_TOKEN(HttpStatus.UNAUTHORIZED,1002, "변조된 토큰입니다."),
     EXPIRED_TOKEN(HttpStatus.UNAUTHORIZED,1003, "만료된 토큰입니다."),
     UNSUPPORTED_TOKEN(HttpStatus.UNAUTHORIZED,1004, "변조된 토큰입니다."),

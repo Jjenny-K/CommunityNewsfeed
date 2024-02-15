@@ -26,6 +26,7 @@ public class TokenProvider implements InitializingBean {
 
     private final Logger logger = LoggerFactory.getLogger(TokenProvider.class);
     private static final String AUTHORITIES_KEY = "auth";
+    private static final String USER_INFO_KEY = "X-USER-ID";
     private static final String BEARER_TYPE = "bearer";
     private final String secret;
     private final long accessTokenValidityInMilliseconds;
@@ -47,7 +48,7 @@ public class TokenProvider implements InitializingBean {
         this.key = Keys.hmacShaKeyFor(keyBytes);
     }
 
-    public TokenDto generateTokenDto(Authentication authentication) {
+    public TokenDto generateTokenDto(Authentication authentication, long userId) {
         String authorities = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
@@ -59,6 +60,7 @@ public class TokenProvider implements InitializingBean {
         String accessToken = Jwts.builder()
                 .setSubject(authentication.getName())       // payload "sub": "name"
                 .claim(AUTHORITIES_KEY, authorities)        // payload "auth": "ROLE_USER"
+                .claim(USER_INFO_KEY, userId)               // payload "X-USER-ID": "1"
                 .setExpiration(accessTokenExpiresIn)        // payload "exp": 1516239022 (예시)
                 .signWith(key, SignatureAlgorithm.HS512)    // header "alg": "HS512"
                 .compact();

@@ -92,7 +92,10 @@ public class AuthService {
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
+        CustomUser user = userRepository.findOneWithAuthoritiesByEmail(loginDto.getEmail())
+                .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_USER));
+
+        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication, user.getId());
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .key(authentication.getName())
@@ -115,6 +118,9 @@ public class AuthService {
 
         Authentication authentication = tokenProvider.getAuthentication(tokenRequestDto.getAccessToken());
 
+        CustomUser user = userRepository.findOneWithAuthoritiesByEmail(authentication.getName())
+                .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_USER));
+
         RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
                 .orElseThrow(() -> new CustomApiException(ErrorCode.UNKNOWN_ERROR));
 
@@ -122,7 +128,7 @@ public class AuthService {
             throw new CustomApiException(ErrorCode.ACCESS_DENIED);
         }
 
-        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
+        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication, user.getId());
 
         RefreshToken newRefreshToken = refreshToken.updateValue(tokenDto.getRefreshToken());
         refreshTokenRepository.save(newRefreshToken);
