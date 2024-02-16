@@ -6,7 +6,6 @@ import com.user_service.domain.dto.UpdateUserDto;
 import com.user_service.domain.dto.UserResponseDto;
 import com.user_service.domain.entity.CustomUser;
 import com.user_service.repository.UserRepository;
-import com.user_service.util.SecurityUtil;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -33,10 +32,9 @@ public class UserService {
 
     // 본인 정보 조회
     @Transactional(readOnly = true)
-    public UserResponseDto getMyUserInfo() {
+    public UserResponseDto getMyUserInfo(long userId) {
         return UserResponseDto.from(
-                SecurityUtil.getCurrentUsername()
-                        .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
+                userRepository.findOneWithAuthoritiesWithProFileImageById(userId)
                         .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."))
         );
     }
@@ -44,10 +42,10 @@ public class UserService {
     // 본인 정보 수정
     @Transactional
     public void updateMyUserInfo(UpdateUserDto updateUserDto,
-                                 MultipartFile updateProfileImage)
+                                 MultipartFile updateProfileImage,
+                                 long userId)
             throws IOException {
-        CustomUser user = SecurityUtil.getCurrentUsername()
-                .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
+        CustomUser user = userRepository.findOneWithAuthoritiesWithProFileImageById(userId)
                 .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."));
 
         user.updateUserInfo(updateUserDto);
@@ -64,17 +62,16 @@ public class UserService {
 
     // 비밀번호 수정
     @Transactional
-    public void updatePassword(UpdatePasswordDto updatePasswordDto) {
-        CustomUser user = validatePassword(updatePasswordDto.getCurrentPassword());
+    public void updatePassword(UpdatePasswordDto updatePasswordDto, long userId) {
+        CustomUser user = validatePassword(updatePasswordDto.getCurrentPassword(), userId);
 
         user.updatePassword(passwordEncoder.encode(updatePasswordDto.getNewPassword()));
     }
 
     // 비밀번호 확인
     @Transactional(readOnly = true)
-    public CustomUser validatePassword(String currentPassword) {
-        CustomUser user = SecurityUtil.getCurrentUsername()
-                .flatMap(userRepository::findOneWithAuthoritiesWithProFileImageByEmail)
+    public CustomUser validatePassword(String currentPassword, long userId) {
+        CustomUser user = userRepository.findOneWithAuthoritiesWithProFileImageById(userId)
                 .orElseThrow(() -> new BadCredentialsException("로그인 유저 정보가 없습니다."));
 
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {

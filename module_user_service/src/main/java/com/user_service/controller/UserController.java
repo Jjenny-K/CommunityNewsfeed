@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +18,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api")
-@PreAuthorize("hasAnyRole('USER','ADMIN')")
 public class UserController {
 
     private final UserService userService;
@@ -34,25 +32,33 @@ public class UserController {
     // 본인 정보 조회
     @GetMapping("/users")
     public ResponseEntity<UserResponseDto> getMyUserInfo(HttpServletRequest request) {
-        return ResponseEntity.ok(userService.getMyUserInfo());
+        long userId = Long.parseLong(request.getHeader("X-USER-ID"));
+
+        return ResponseEntity.ok(userService.getMyUserInfo(userId));
     }
 
     // 본인 정보 수정
     @PutMapping("/users")
-    public ResponseEntity<?> updateMyUserInfo(@Valid @RequestPart(name = "updateUserData") UpdateUserDto updateUserDto,
+    public ResponseEntity<?> updateMyUserInfo(HttpServletRequest request,
+                                              @Valid @RequestPart(name = "updateUserData") UpdateUserDto updateUserDto,
                                               @RequestPart(name = "profileImage") MultipartFile updateProfileImage)
             throws IOException {
-        userService.updateMyUserInfo(updateUserDto, updateProfileImage);
+        long userId = Long.parseLong(request.getHeader("X-USER-ID"));
 
-        UserResponseDto user = userService.getMyUserInfo();
+        userService.updateMyUserInfo(updateUserDto, updateProfileImage, userId);
+
+        UserResponseDto user = userService.getMyUserInfo(userId);
 
         return new ResponseEntity<>(user, HttpStatus.CREATED);
     }
 
     // 비밀번호 수정
     @PutMapping("/users/password")
-    public ResponseEntity<?> updatePassword(@Valid @RequestBody UpdatePasswordDto updatePasswordDto) {
-        userService.updatePassword(updatePasswordDto);
+    public ResponseEntity<?> updatePassword(HttpServletRequest request,
+                                            @Valid @RequestBody UpdatePasswordDto updatePasswordDto) {
+        long userId = Long.parseLong(request.getHeader("X-USER-ID"));
+
+        userService.updatePassword(updatePasswordDto, userId);
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("message", "비밀번호 수정 성공");

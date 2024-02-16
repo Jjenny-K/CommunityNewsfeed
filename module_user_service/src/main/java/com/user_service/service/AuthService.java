@@ -92,7 +92,10 @@ public class AuthService {
 
         Authentication authentication = authenticationManagerBuilder.getObject().authenticate(authenticationToken);
 
-        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
+        CustomUser user = userRepository.findOneWithAuthoritiesByEmail(loginDto.getEmail())
+                .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_USER));
+
+        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication, user.getId());
 
         RefreshToken refreshToken = RefreshToken.builder()
                 .key(authentication.getName())
@@ -106,29 +109,32 @@ public class AuthService {
         return tokenDto;
     }
 
-    // 토큰 재발급
-    @Transactional
-    public TokenDto reissue(TokenRequestDto tokenRequestDto) {
-        if (!tokenProvider.validateToken(tokenRequestDto.getRefreshToken())) {
-            throw new CustomApiException(ErrorCode.EXPIRED_TOKEN);
-        }
-
-        Authentication authentication = tokenProvider.getAuthentication(tokenRequestDto.getAccessToken());
-
-        RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
-                .orElseThrow(() -> new CustomApiException(ErrorCode.UNKNOWN_ERROR));
-
-        if (!refreshToken.getValue().equals(tokenRequestDto.getRefreshToken())) {
-            throw new CustomApiException(ErrorCode.ACCESS_DENIED);
-        }
-
-        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication);
-
-        RefreshToken newRefreshToken = refreshToken.updateValue(tokenDto.getRefreshToken());
-        refreshTokenRepository.save(newRefreshToken);
-
-        return tokenDto;
-    }
+//    // 토큰 재발급
+//    @Transactional
+//    public TokenDto reissue(TokenRequestDto tokenRequestDto) {
+//        if (!tokenProvider.validateToken(tokenRequestDto.getRefreshToken())) {
+//            throw new CustomApiException(ErrorCode.EXPIRED_TOKEN);
+//        }
+//
+//        Authentication authentication = tokenProvider.getAuthentication(tokenRequestDto.getAccessToken());
+//
+//        CustomUser user = userRepository.findOneWithAuthoritiesByEmail(authentication.getName())
+//                .orElseThrow(() -> new CustomApiException(ErrorCode.NOT_FOUND_USER));
+//
+//        RefreshToken refreshToken = refreshTokenRepository.findByKey(authentication.getName())
+//                .orElseThrow(() -> new CustomApiException(ErrorCode.UNKNOWN_ERROR));
+//
+//        if (!refreshToken.getValue().equals(tokenRequestDto.getRefreshToken())) {
+//            throw new CustomApiException(ErrorCode.ACCESS_DENIED);
+//        }
+//
+//        TokenDto tokenDto = tokenProvider.generateTokenDto(authentication, user.getId());
+//
+//        RefreshToken newRefreshToken = refreshToken.updateValue(tokenDto.getRefreshToken());
+//        refreshTokenRepository.save(newRefreshToken);
+//
+//        return tokenDto;
+//    }
 
     // 로그아웃
     @Transactional
