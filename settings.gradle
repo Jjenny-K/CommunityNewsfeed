@@ -1,4 +1,4 @@
-rootProject.name = 'preorderpurchase'
+rootProject.name = 'communitynewsfeed'
 
 include 'module_user_service'
 include 'module_activity_service'
